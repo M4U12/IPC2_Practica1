@@ -108,4 +108,34 @@ public class GestorInsumo {
             throw new BDException("Error al consultar el stock actual: " + e.getMessage(), e);
         }
     }
+    public boolean descontarStockActual(String codigoInsumo, double cantidadUsada)throws BDException{
+        double stockActual = obtenerStockActual(codigoInsumo);
+        
+        if (stockActual == -1.0){
+            System.out.println("Error: el insumo no existe en la base de datos");
+            return false;
+        }
+        
+        if (stockActual < cantidadUsada) {
+            System.out.println("Stock insuficiente. Tienes " + stockActual + 
+                               " y se intentó descontar " + cantidadUsada);
+            return false; 
+        }
+        
+        double nuevoStock = stockActual - cantidadUsada;
+        String query = "UPDATE INSUMO SET Cantidad_actual = ? WHERE Codigo_insumo = ?";
+        
+        try (Connection connection = conexionDB.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            
+            ps.setDouble(1, nuevoStock);
+            ps.setString(2, codigoInsumo);
+            
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+            
+        } catch (SQLException e) {
+            throw new BDException("Error al descontar el stock del insumo: " + e.getMessage(), e);
+        }
+    }
 }

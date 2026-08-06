@@ -1,7 +1,10 @@
+gestores\GestorMenu.class
 gestores\GestorInsumo.class
+modelos\Receta.class
 modelos\Empleado.class
 gestores\GestorPersonal.class
 excepciones\BDException.class
 modelos\Insumo.class
+modelos\Producto.class
 practica1\Practica1.class
 dbconection\DBConnection.class
