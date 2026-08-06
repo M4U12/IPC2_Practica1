@@ -1,0 +1,7 @@
+gestores\GestorInsumo.class
+modelos\Empleado.class
+gestores\GestorPersonal.class
+excepciones\BDException.class
+modelos\Insumo.class
+practica1\Practica1.class
+dbconection\DBConnection.class

@@ -1,0 +1,56 @@
+**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# https://maven.apache.org/wrapper/#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse m2e generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+/web-static/nbproject/private/
+/HTML5Application/nbproject/private/
+**/nb-configuration.xml
+
+
+# Global Level
+/app-angular/*.exe
+/app-angular/dist/
+/app-angular/coverage/
+/app-angular/node_modules/
+/app-angular/tmp/
+/app-angular/npm-debug.log
+/app-angular/yarn-error.log
+
+# IDE-Specific
+
+# Visual Studio Code
+/app-angular/.vscode/
+/app-angular/!.vscode/settings.json
+/app-angular/!.vscode/tasks.json
+/app-angular/!.vscode/launch.json
+/app-angular/!.vscode/extensions.json
+/app-angular/**/*.code-workspace
+
+# Angular-Specific
+/app-angular/.angular/
+/app-angular/aio/
+/app-angular/rollup-test/
+
+# Miscellaneous
+/app-angular/.notes.md
+/app-angular/.history
+/app-angular/.husky/_
+/app-angular/.bazelrc.user
+/app-angular/.ng-dev.log
+/app-angular/.ng-dev.err*.log
+/app-angular/.ng-dev.user*
+/app-angular/.eslintcache
+/rest-api-app/target/
