@@ -1,9 +1,12 @@
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\dbconection\DBConnection.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\excepciones\BDException.java
+C:\Users\ACER\Documents\IPC2\practica1\src\main\java\gestores\GestorCuenta.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\gestores\GestorInsumo.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\gestores\GestorMenu.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\gestores\GestorMesa.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\gestores\GestorPersonal.java
+C:\Users\ACER\Documents\IPC2\practica1\src\main\java\modelos\Cuenta.java
+C:\Users\ACER\Documents\IPC2\practica1\src\main\java\modelos\DetalleCuenta.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\modelos\Empleado.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\modelos\Insumo.java
 C:\Users\ACER\Documents\IPC2\practica1\src\main\java\modelos\Mesa.java
