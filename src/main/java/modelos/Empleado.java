@@ -20,6 +20,12 @@ public class Empleado {
         this.estado = estado;
         this.rol = rol;
     }
+    
+    public Empleado(String dpi, String nombre, String rol) {
+        this.dpi = dpi;
+        this.nombre = nombre;
+        this.rol = rol;
+    }
 
     public String getDpi() {
         return dpi;
