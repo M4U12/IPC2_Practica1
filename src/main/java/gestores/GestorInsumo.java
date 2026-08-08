@@ -138,4 +138,34 @@ public class GestorInsumo {
             throw new BDException("Error al descontar el stock del insumo: " + e.getMessage(), e);
         }
     }
+    
+    public List<Insumo> obtenerInsumosBajoStock() throws BDException {
+        List<Insumo> listaAlertas = new ArrayList<>();
+        
+        String query = "SELECT Codigo_insumo, Nombre_insumo, Unidad_medida, Cantidad_actual, Stock_minimo, Costo_insumo " +
+                       "FROM insumo WHERE Cantidad_actual <= Stock_minimo";
+        
+        try (Connection connection = conexionDB.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                
+                Insumo insumo = new Insumo(
+                    rs.getString("Codigo_insumo"),
+                    rs.getString("Nombre_insumo"),
+                    rs.getString("Unidad_medida"),
+                    rs.getDouble("Cantidad_actual"),
+                    rs.getDouble("Stock_minimo"),
+                    rs.getDouble("Costo_insumo")
+                );
+                
+                listaAlertas.add(insumo);
+            }
+        } catch (SQLException e) {
+            throw new BDException("Error al consultar alertas de stock: " + e.getMessage(), e);
+        }
+        
+        return listaAlertas;
+    }
 }

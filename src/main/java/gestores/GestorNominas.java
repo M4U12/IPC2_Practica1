@@ -26,7 +26,7 @@ public class GestorNominas {
         try (Connection connection = conexionDB.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
             
-            ps.setString(1, dpiMesero);;
+            ps.setString(1, dpiMesero);
             ps.setDate(2, Date.valueOf(fechaInicio));
             ps.setDate(3, Date.valueOf(fechaFin));
             
@@ -112,5 +112,83 @@ public class GestorNominas {
             throw new BDException("Error al listar nóminas: " + e.getMessage(), e);
         }
         return historial;
+    }
+    
+    public boolean planillaPendiente(LocalDate fechaCorte, boolean esPrimeraQuincena) throws BDException{
+        String query = "SELECT DPI, Nombre, Rol, Salario FROM empleado WHERE Estado = 1";
+        
+        try (Connection connection = conexionDB.getConnection();
+             PreparedStatement psEmpleados = connection.prepareStatement(query);
+             ResultSet rs = psEmpleados.executeQuery()) {
+            
+            boolean huboPagos = false;
+            int correlativo = 1;
+
+            while (rs.next()) {
+                String dpi = rs.getString("DPI");
+                String rol = rs.getString("Rol");
+                double sueldoBase = rs.getDouble("Salario");
+                
+                
+                double montoAPagar = esPrimeraQuincena ? (sueldoBase * 0.30) : (sueldoBase * 0.70);
+                
+                
+                if (rol.equalsIgnoreCase("Mesero")) {
+                    LocalDate inicioPeriodo;
+                    LocalDate finPeriodo = fechaCorte; 
+
+                    if (esPrimeraQuincena) {
+                        inicioPeriodo = fechaCorte.withDayOfMonth(1); 
+                    } else {
+                        inicioPeriodo = fechaCorte.withDayOfMonth(16); 
+                    }
+                    
+                    double propinas = calcularPropinasAcumuladas(dpi, inicioPeriodo, finPeriodo);
+                    montoAPagar += propinas;
+                }
+                
+                
+                String codigoNomina = "NOM-" + fechaCorte.toString().replace("-", "") + "-" + correlativo;
+                
+                
+                Empleado empleadoReferencia = new Empleado(dpi, rs.getString("Nombre"), rol);
+                
+                
+                Nomina nominaPendiente = new Nomina(
+                    codigoNomina,
+                    fechaCorte, // fecha de corte
+                    esPrimeraQuincena ? "Quincenal" : "Fin de Mes",
+                    montoAPagar,
+                    "PENDIENTE", 
+                    empleadoReferencia
+                );
+                
+                
+                registrarPago(nominaPendiente);
+                huboPagos = true;
+                correlativo++;
+            }
+            
+            return huboPagos;
+            
+        } catch (SQLException e) {
+            throw new BDException("Error al generar planilla pendiente: " + e.getMessage(), e);
+        }
+    }
+    
+    public boolean efectuarPagosPendientes(LocalDate fechaCorte) throws BDException {
+        String query = "UPDATE nomina SET Estado_pago = 'Efectuado' WHERE Fecha_emision_pago = ? AND Estado_pago = 'PENDIENTE'";
+        
+        try (Connection connection = conexionDB.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            
+            ps.setDate(1, Date.valueOf(fechaCorte));
+            int filasAfectadas = ps.executeUpdate();
+            
+            return filasAfectadas > 0;
+            
+        } catch (SQLException e) {
+            throw new BDException("Error al efectuar los pagos pendientes: " + e.getMessage(), e);
+        }
     }
 }

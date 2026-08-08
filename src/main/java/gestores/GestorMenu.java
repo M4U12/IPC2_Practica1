@@ -101,4 +101,57 @@ public class GestorMenu {
         }
         return ingredientes;
     }
+    
+    public boolean registrarProductoCompleto(Producto producto, List<Receta> ingredientes) throws BDException {
+        String queryProducto = "INSERT INTO PRODUCTO (Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia) VALUES (?, ?, ?, ?, ?)";
+        String queryReceta = "INSERT INTO RECETA (Codigo_producto, Codigo_insumo, Cantidad) VALUES (?, ?, ?)";
+        
+        Connection connection = null; 
+        
+        try {
+            connection = conexionDB.getConnection();
+            connection.setAutoCommit(false);
+            
+            try (PreparedStatement psProd = connection.prepareStatement(queryProducto)) {
+                psProd.setString(1, producto.getCodigoProducto());
+                psProd.setString(2, producto.getNombreProducto());
+                psProd.setString(3, producto.getCategoria());
+                psProd.setDouble(4, producto.getPrecioVenta());
+                psProd.setString(5, producto.getFotografia());
+                psProd.executeUpdate();
+            }
+            
+            try (PreparedStatement psReceta = connection.prepareStatement(queryReceta)) {
+                for (Receta r : ingredientes) {
+                    psReceta.setString(1, r.getCodigoProducto());
+                    psReceta.setString(2, r.getCodigoInsumo());
+                    psReceta.setDouble(3, r.getCantidad());
+                    psReceta.executeUpdate(); 
+                }
+            }
+            
+            connection.commit();
+            return true;
+            
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback(); 
+                } catch (SQLException ex) {
+                    throw new BDException("Error fatal al intentar deshacer los cambios: " + ex.getMessage(), ex);
+                }
+            }
+            throw new BDException("Error al registrar. Se canceló todo para evitar datos incompletos: " + e.getMessage(), e);
+            
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException ex) {
+                    System.err.println("Error al cerrar la conexión: " + ex.getMessage());
+                }
+            }
+        }
+    }
 }
