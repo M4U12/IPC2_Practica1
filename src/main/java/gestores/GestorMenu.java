@@ -17,24 +17,6 @@ public class GestorMenu {
         this.conexionDB = new DBConnection();
     }
     
-    public boolean registrarProducto(Producto producto) throws BDException {
-        String query = "INSERT INTO PRODUCTO (Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia) VALUES (?, ?, ?, ?, ?)";
-        
-        try (Connection connection = conexionDB.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)){
-            ps.setString(1, producto.getCodigoProducto());
-            ps.setString(2, producto.getNombreProducto());
-            ps.setString(3, producto.getCategoria());
-            ps.setDouble(4, producto.getPrecioVenta());
-            ps.setString(5, producto.getFotografia());
-            
-            int filasAfectadas = ps.executeUpdate();
-            return filasAfectadas > 0;
-            
-        } catch (SQLException e) {
-            throw new BDException("Error al registrar el producto en el menu: " + e.getMessage(), e);
-        }
-    }
     
     public boolean agregarInsumoAReceta(Receta receta) throws BDException {
         String query = "INSERT INTO RECETA (Codigo_producto, Codigo_insumo, Cantidad) VALUES (?, ?, ?)";
