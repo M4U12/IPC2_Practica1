@@ -5,22 +5,22 @@ public class Producto {
     private String nombreProducto;
     private String categoria;
     private double precioVenta;
-    private String fotografia;
+    private byte[] fotografia;
 
-    public Producto(String codigoProducto, String nombreProducto, String categoria, double precioVenta, String fotografia) {
+    public Producto(String codigoProducto, String nombreProducto, String categoria, double precioVenta, byte[] fotografia) {
         this.codigoProducto = codigoProducto;
         this.nombreProducto = nombreProducto;
         this.categoria = categoria;
         this.precioVenta = precioVenta;
         this.fotografia = fotografia;
     }
-    
-    public void setFotografia(String fotografia) {
-        this.fotografia = fotografia;
+
+    public byte[] getFotografia() {
+        return fotografia;
     }
 
-    public String getFotografia() {
-        return fotografia;
+    public void setFotografia(byte[] fotografia) {
+        this.fotografia = fotografia;
     }
 
     public String getCodigoProducto() {

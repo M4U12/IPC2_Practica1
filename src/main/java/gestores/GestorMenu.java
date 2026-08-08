@@ -49,7 +49,7 @@ public class GestorMenu {
                     rs.getString("Nombre_producto"),
                     rs.getString("Categoria"),
                     rs.getDouble("Precio_venta"),
-                    rs.getString("Fotografia")
+                    rs.getBytes("Fotografia")
                 );
                 menu.add(prod);
             }
@@ -99,7 +99,7 @@ public class GestorMenu {
                 psProd.setString(2, producto.getNombreProducto());
                 psProd.setString(3, producto.getCategoria());
                 psProd.setDouble(4, producto.getPrecioVenta());
-                psProd.setString(5, producto.getFotografia());
+                psProd.setBytes(5, producto.getFotografia());
                 psProd.executeUpdate();
             }
             
