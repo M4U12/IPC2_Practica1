@@ -4,10 +4,12 @@
  */
 package ventanasMenu;
 
+import excepciones.BDException;
 import gestores.GestorInsumo;
 import gestores.GestorMenu;
 import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,7 @@ public class VentanaAgregarProducto extends javax.swing.JInternalFrame {
 
     private void cargarInsumos() {
         try {
-            GestorInsumo gestor = new gestores.GestorInsumo();
+            GestorInsumo gestor = new GestorInsumo();
             List<Insumo> lista = gestor.listarInventario();
 
             cbIngredientes.removeAllItems();
@@ -296,8 +298,8 @@ public class VentanaAgregarProducto extends javax.swing.JInternalFrame {
                 lblImagenPrevia.setIcon(new ImageIcon(imagenEscalada));
                 lblImagenPrevia.setText("");
 
-            } catch (java.io.IOException ex) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error al leer el archivo de imagen: " + ex.getMessage());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error al leer el archivo de imagen: " + ex.getMessage());
             }
         }
     }//GEN-LAST:event_btnSeleccionarImagenActionPerformed
@@ -347,7 +349,7 @@ public class VentanaAgregarProducto extends javax.swing.JInternalFrame {
             boolean exito = gestor.registrarProductoCompleto(nuevoProducto, listaIngredientes); 
 
             if (exito) {
-                javax.swing.JOptionPane.showMessageDialog(this, "¡El platillo '" + nombre + "' y su receta se guardaron con éxito!");
+                JOptionPane.showMessageDialog(this, "El platillo '" + nombre + "' y su receta se guardaron con éxito");
 
                 
                 txtCodigo.setText("");
@@ -364,8 +366,8 @@ public class VentanaAgregarProducto extends javax.swing.JInternalFrame {
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "El precio y las cantidades deben ser números válidos.", "Error de Formato", JOptionPane.WARNING_MESSAGE);
-        } catch (excepciones.BDException ex) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error en la base de datos:\n" + ex.getMessage(), "Error Crítico", JOptionPane.ERROR_MESSAGE);
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error en la base de datos:\n" + ex.getMessage(), "Error Crítico", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
