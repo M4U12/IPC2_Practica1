@@ -4,6 +4,13 @@
  */
 package ventanasGestorPersonal;
 
+import gestores.GestorPersonal;
+import java.time.LocalDate;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelos.Empleado;
+
 /**
  *
  * @author ACER
@@ -26,25 +33,190 @@ public class VentanaEditarEmpleado extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        btnBuscar = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
+        txtBuscarDPI = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Editar Empleados");
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "DPI", "Nombre", "Rol", "Jornada", " Salario(en Quetzales)", "Fecha de Contratación", "Estado"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, true, true, true, true, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+
+        btnBuscar.setText("BUSCAR");
+        btnBuscar.addActionListener(this::btnBuscarActionPerformed);
+
+        btnGuardar.setText("GUARDAR");
+        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
+
+        jLabel1.setText("Ingrese el DPI:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtBuscarDPI)
+                .addGap(18, 18, 18)
+                .addComponent(btnBuscar)
+                .addGap(18, 18, 18)
+                .addComponent(btnGuardar)
+                .addGap(17, 17, 17))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 945, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnBuscar)
+                    .addComponent(btnGuardar)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtBuscarDPI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        String dpiBusqueda = txtBuscarDPI.getText().trim();
+
+        if (dpiBusqueda.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingresa el DPI a buscar.");
+            return;
+        }
+
+        try {
+            GestorPersonal gestor = new GestorPersonal();
+            Empleado emp = gestor.buscarEmpleadoPorDPI(dpiBusqueda);
+
+            DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+            modelo.setRowCount(0);
+
+            if (emp != null) {
+                String estadoNum = emp.getEstado() ? "1" : "0";
+                modelo.addRow(new Object[]{
+                    emp.getDpi(),
+                    emp.getNombre(),
+                    emp.getRol(),
+                    emp.getJornadaLaboral(),
+                    emp.getSalario(),
+                    emp.getFechaContratacion(),
+                    estadoNum
+                });
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontró un empleado con ese DPI.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al buscar: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        if (jTable1.isEditing()) {
+            jTable1.getCellEditor().stopCellEditing();
+        }
+        DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+
+        if (modelo.getRowCount() == 0) {
+            return;
+        }
+
+        // extraigo todo lo de la fila 0
+        String nuevoDpi = modelo.getValueAt(0, 0).toString().trim();
+        String nombre = modelo.getValueAt(0, 1).toString().trim();
+        String rol = modelo.getValueAt(0, 2).toString().trim().toUpperCase();
+        String jornada = modelo.getValueAt(0, 3).toString().trim();
+        String salarioStr = modelo.getValueAt(0, 4).toString().trim();
+        LocalDate fechaContratación = LocalDate.parse(modelo.getValueAt(0, 5).toString().trim());
+        String estadoStr = modelo.getValueAt(0, 6).toString().trim();
+
+        if (!nuevoDpi.matches("\\d{13}")) {
+            JOptionPane.showMessageDialog(this, "ERROR: El DPI solo debe contener números.");
+            return;
+        }
+
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) {
+            JOptionPane.showMessageDialog(this, "ERROR: El nombre solo puede contener letras.");
+            return;
+        }
+        
+        if (!jornada.equalsIgnoreCase("Matutina") && !jornada.equalsIgnoreCase("Vespertina") && !jornada.equalsIgnoreCase("Nocturna")){
+            JOptionPane.showMessageDialog(this, "ERROR: La jornada debe ser Matutina, Vespertina o Nocturna");
+            return;
+        }
+
+        if (!rol.equals("MESERO") && !rol.equals("COCINERO") && !rol.equals("BARISTA") && !rol.equals("ADMINISTRADOR")) {
+            JOptionPane.showMessageDialog(this, "ERROR: El rol debe ser MESERO, COCINERO, BARISTA o ADMINISTRADOR.");
+            return;
+        }
+
+        if (!estadoStr.equals("0") && !estadoStr.equals("1")) {
+            JOptionPane.showMessageDialog(this, "ERROR: El estado solo puede ser 1 (Activo) o 0 (Inactivo).");
+            return;
+        }
+
+        try {
+            double salarioFinal = Double.parseDouble(salarioStr);
+            boolean estadoFinal = estadoStr.equals("1");
+
+            String dpiOriginal = txtBuscarDPI.getText().trim();
+
+            GestorPersonal gestor = new GestorPersonal();
+            Empleado emp = new Empleado(nuevoDpi, nombre, jornada, salarioFinal, fechaContratación, estadoFinal, rol);
+            boolean exito = gestor.actualizarEmpleado(dpiOriginal, emp);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "¡Empleado actualizado con éxito!");
+                modelo.setRowCount(0);
+                txtBuscarDPI.setText("");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "ERROR: El salario debe ser numérico.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error de Base de Datos: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTextField txtBuscarDPI;
     // End of variables declaration//GEN-END:variables
 }

@@ -4,6 +4,11 @@
  */
 package ventanasGestorPersonal;
 
+import gestores.GestorPersonal;
+import java.time.LocalDate;
+import javax.swing.JOptionPane;
+import modelos.Empleado;
+
 /**
  *
  * @author ACER
@@ -26,25 +31,182 @@ public class VentanaRegistrarEmpleado extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        labelDPI = new javax.swing.JLabel();
+        txtFIeldDPI = new javax.swing.JTextField();
+        labelRol = new javax.swing.JLabel();
+        labelSalario = new javax.swing.JLabel();
+        txtFIeldSalario = new javax.swing.JTextField();
+        labelNombre = new javax.swing.JLabel();
+        txtFIeldNombre = new javax.swing.JTextField();
+        labelJornadaLaboral = new javax.swing.JLabel();
+        btnRegistrar = new javax.swing.JButton();
+        comboBoxJornada = new javax.swing.JComboBox<>();
+        comboBoxRol = new javax.swing.JComboBox<>();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Registrar Empleados");
+
+        labelDPI.setText("DPI");
+
+        labelRol.setText("Rol");
+
+        labelSalario.setText("Salario");
+
+        labelNombre.setText("Nombre Completo");
+
+        labelJornadaLaboral.setText("Jornada Laboral");
+
+        btnRegistrar.setText("REGISTRAR");
+        btnRegistrar.addActionListener(this::btnRegistrarActionPerformed);
+
+        comboBoxJornada.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MATUTINA", "VESPERTINA", "NOCTURNA" }));
+
+        comboBoxRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MESERO", "COCINERO", "BARISTA", "ADMINISTRADOR" }));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(labelRol, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtFIeldDPI, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(68, 68, 68)
+                        .addComponent(labelDPI, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboBoxRol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(comboBoxJornada, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtFIeldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(31, 31, 31))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(labelNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(58, 58, 58))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(labelJornadaLaboral, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(58, 58, 58))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnRegistrar)
+                        .addGap(185, 185, 185))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(labelSalario, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(209, 209, 209))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(txtFIeldSalario, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(147, 147, 147))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(labelDPI)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtFIeldDPI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(labelRol)
+                            .addComponent(labelJornadaLaboral))
+                        .addGap(85, 85, 85)
+                        .addComponent(labelSalario))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(labelNombre)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtFIeldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(72, 72, 72)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboBoxJornada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboBoxRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
+                .addComponent(txtFIeldSalario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addComponent(btnRegistrar)
+                .addGap(18, 18, 18))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        String dpi = txtFIeldDPI.getText().trim();
+        String nombre = txtFIeldNombre.getText().trim();
+        String rol = comboBoxRol.getSelectedItem().toString();
+        String jornada = comboBoxJornada.getSelectedItem().toString();
+        String salarioStr = txtFIeldSalario.getText().trim();
+
+        if (dpi.isEmpty() || nombre.isEmpty() || salarioStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Error. Todos los campos son obligatorios.");
+            return;
+        }
+
+        if (!dpi.matches("\\d{13}")) {
+            JOptionPane.showMessageDialog(this, "Error. El DPI debe tener exactamente 13 números, sin letras ni espacios.");
+            return;
+        }
+
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) {
+            JOptionPane.showMessageDialog(this, "Error. El nombre no puede contener números ni símbolos.");
+            return;
+        }
+        
+        try {
+            double salario = Double.parseDouble(salarioStr);
+
+            GestorPersonal gestor = new GestorPersonal();
+            Empleado nuevoEmpleado = new Empleado(dpi, nombre, jornada, salario, LocalDate.now(), true, rol);
+            gestor.registrarEmpleado(nuevoEmpleado);
+            JOptionPane.showMessageDialog(this, "Empleado registrado exitosamente.");
+
+            txtFIeldDPI.setText("");
+            txtFIeldNombre.setText("");
+            txtFIeldSalario.setText("");
+            comboBoxRol.setSelectedIndex(0);
+            comboBoxJornada.setSelectedIndex(0);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El salario debe ser un número válido.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnRegistrarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnRegistrar;
+    private javax.swing.JComboBox<String> comboBoxJornada;
+    private javax.swing.JComboBox<String> comboBoxRol;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel labelDPI;
+    private javax.swing.JLabel labelJornadaLaboral;
+    private javax.swing.JLabel labelNombre;
+    private javax.swing.JLabel labelRol;
+    private javax.swing.JLabel labelSalario;
+    private javax.swing.JTextField txtFIeldDPI;
+    private javax.swing.JTextField txtFIeldNombre;
+    private javax.swing.JTextField txtFIeldSalario;
     // End of variables declaration//GEN-END:variables
 }
