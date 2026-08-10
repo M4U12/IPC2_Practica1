@@ -4,6 +4,8 @@
  */
 package ventanasPincipal;
 
+import gestores.GestorNominas;
+import javax.swing.JOptionPane;
 import ventanasReportes.VentanaBajoStock;
 import ventanasReportes.VentanaFlujoCaja;
 import ventanasReportes.VentanaProductosMasVendidos;
@@ -30,7 +32,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private VentanaHistorialPagos ventanaHistorialPagos = null;
     private VentanaPagos ventanaPagos = null;
     private VentanaInventario ventanaInventario = null;
-    private VentanaReabastecerInventario ventanaReabastecer = null; 
+    private VentanaReabastecerInventario ventanaReabastecer = null;
     private VentanaCatalogo ventanaCatalogo = null;
     private VentanaAgregarProducto ventanaAgregarProducto = null;
     private VentanaMonitoreoMesas ventanaMonitoreoMesas = null;
@@ -46,6 +48,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      */
     public VentanaPrincipal() {
         initComponents();
+        try {
+            GestorNominas gestor = new GestorNominas();
+            String mensajeAlerta = gestor.verificarYGenerarPlanillaAutomatica();
+
+            if (mensajeAlerta != null) {
+                JOptionPane.showMessageDialog(this, mensajeAlerta, "Nómina Automática", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            System.out.println("Aviso interno: Error revisando fechas automáticas: " + e.getMessage());
+        }
     }
 
     /**

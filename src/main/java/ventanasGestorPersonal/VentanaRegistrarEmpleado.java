@@ -46,6 +46,7 @@ public class VentanaRegistrarEmpleado extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
+        setResizable(true);
         setTitle("Registrar Empleados");
 
         labelDPI.setText("DPI");

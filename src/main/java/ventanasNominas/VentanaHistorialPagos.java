@@ -4,6 +4,11 @@
  */
 package ventanasNominas;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelos.Nomina;
+
 /**
  *
  * @author ACER
@@ -15,6 +20,34 @@ public class VentanaHistorialPagos extends javax.swing.JInternalFrame {
      */
     public VentanaHistorialPagos() {
         initComponents();
+        cargarHistorial();
+    }
+
+    private void cargarHistorial() {
+        try {
+            gestores.GestorNominas gestor = new gestores.GestorNominas();
+            List<Nomina> listaPagos = gestor.listarPagos();
+
+            DefaultTableModel modelo = (DefaultTableModel) tablaHistorial.getModel();
+            modelo.setRowCount(0);
+
+            for (Nomina n : listaPagos) {
+                modelo.addRow(new Object[]{
+                    n.getCodigoNomina(),
+                    n.getEmpleado().getDpi() + " - " + n.getEmpleado().getNombre(),
+                    n.getEmpleado().getRol(),
+                    n.getTipoPago(),
+                    "Q " + String.format("%.2f", n.getMontoPago()),
+                    n.getFechaEmisionPago().toString(),
+                    n.getEstadoPago()
+                });
+            }
+
+        } catch (excepciones.BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + ex.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar la tabla: " + e.getMessage());
+        }
     }
 
     /**
@@ -26,19 +59,36 @@ public class VentanaHistorialPagos extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaHistorial = new javax.swing.JTable();
+
         setClosable(true);
         setIconifiable(true);
+        setResizable(true);
         setTitle("Historial de Pagos");
+
+        tablaHistorial.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Código", "DPI y Nombre Empleado", "Rol", "Tipo de pago", "Monto", "Fecha", "Estado"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaHistorial);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
         );
 
         pack();
@@ -46,5 +96,7 @@ public class VentanaHistorialPagos extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablaHistorial;
     // End of variables declaration//GEN-END:variables
 }

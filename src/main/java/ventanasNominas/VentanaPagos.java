@@ -4,6 +4,10 @@
  */
 package ventanasNominas;
 
+import gestores.GestorNominas;
+import java.time.LocalDate;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author ACER
@@ -15,6 +19,7 @@ public class VentanaPagos extends javax.swing.JInternalFrame {
      */
     public VentanaPagos() {
         initComponents();
+        txtFechaCorte.setText(LocalDate.now().toString());
     }
 
     /**
@@ -26,25 +31,131 @@ public class VentanaPagos extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblTipoPago = new javax.swing.JLabel();
+        cbPeriodo = new javax.swing.JComboBox<>();
+        lblFecha = new javax.swing.JLabel();
+        btnGenerar = new javax.swing.JButton();
+        txtFechaCorte = new javax.swing.JTextField();
+        btnPagar = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
+        setResizable(true);
         setTitle("Generar y Efectuar Pagos");
+
+        lblTipoPago.setText("Tipo de pago:");
+
+        cbPeriodo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Primera Quincena (30%)", "Fin de mes (70%)" }));
+
+        lblFecha.setText("Fecha:");
+
+        btnGenerar.setText("Generar");
+        btnGenerar.addActionListener(this::btnGenerarActionPerformed);
+
+        txtFechaCorte.addActionListener(this::txtFechaCorteActionPerformed);
+
+        btnPagar.setText("Pagar");
+        btnPagar.addActionListener(this::btnPagarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFechaCorte, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lblTipoPago)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbPeriodo, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addComponent(btnGenerar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnPagar)
+                .addGap(26, 26, 26))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFecha)
+                    .addComponent(txtFechaCorte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnGenerar)
+                    .addComponent(btnPagar)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbPeriodo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblTipoPago)))
+                .addContainerGap(241, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void txtFechaCorteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaCorteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFechaCorteActionPerformed
+
+    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        try {
+
+            String fechaTexto = txtFechaCorte.getText().trim();
+            LocalDate fechaCorte = LocalDate.parse(fechaTexto);
+            GestorNominas gestor = new GestorNominas();
+
+            boolean esPrimera = cbPeriodo.getSelectedIndex() == 0;
+            if (esPrimera && fechaCorte.getDayOfMonth() > 15) {
+                JOptionPane.showMessageDialog(this,
+                        "ERROR: No se puede generar una planilla quincenal para una fecha posterior al día 15.",
+                        "Fecha Inválida",
+                        JOptionPane.ERROR_MESSAGE);
+                return; 
+            }
+            boolean generados = gestor.planillaPendiente(fechaCorte, esPrimera);
+
+            if (generados) {
+                JOptionPane.showMessageDialog(this, "Planilla generada con éxito. Los pagos están en estado PENDIENTE.\nYa puede proceder a efectuarlos.");
+
+            } else {
+                JOptionPane.showMessageDialog(this, "No se generaron boletas nuevas. El personal activo ya tiene su pago registrado para este corte.");
+            }
+
+        } catch (java.time.format.DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "ERROR: El formato de la fecha debe ser AAAA-MM-DD.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error de BD: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnGenerarActionPerformed
+
+    private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
+        try {
+            String fechaTexto = txtFechaCorte.getText().trim();
+            LocalDate fechaCorte = LocalDate.parse(fechaTexto);
+
+            GestorNominas gestor = new GestorNominas();
+            boolean efectuados = gestor.efectuarPagosPendientes(fechaCorte);
+
+            if (efectuados) {
+                JOptionPane.showMessageDialog(this, "Transacción exitosa. Todos los pagos pendientes han sido EFECTUADOS.");
+
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontraron pagos pendientes para la fecha: " + fechaTexto);
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error de BD: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnPagarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnGenerar;
+    private javax.swing.JButton btnPagar;
+    private javax.swing.JComboBox<String> cbPeriodo;
+    private javax.swing.JLabel lblFecha;
+    private javax.swing.JLabel lblTipoPago;
+    private javax.swing.JTextField txtFechaCorte;
     // End of variables declaration//GEN-END:variables
 }

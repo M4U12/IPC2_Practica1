@@ -42,6 +42,7 @@ public class VentanaEditarEmpleado extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
+        setResizable(true);
         setTitle("Editar Empleados");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -96,11 +97,12 @@ public class VentanaEditarEmpleado extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBuscar)
-                    .addComponent(btnGuardar)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtBuscarDPI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnBuscar)
+                        .addComponent(btnGuardar)
+                        .addComponent(txtBuscarDPI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
                 .addContainerGap())
@@ -163,7 +165,7 @@ public class VentanaEditarEmpleado extends javax.swing.JInternalFrame {
         String estadoStr = modelo.getValueAt(0, 6).toString().trim();
 
         if (!nuevoDpi.matches("\\d{13}")) {
-            JOptionPane.showMessageDialog(this, "ERROR: El DPI solo debe contener números.");
+            JOptionPane.showMessageDialog(this, "ERROR: El DPI solo debe contener números(13).");
             return;
         }
 

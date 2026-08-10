@@ -39,6 +39,7 @@ public class VentanaListarPersonal extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
+        setResizable(true);
         setTitle("Lista de Personal");
 
         cbFiltro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Activos", "Inactivos", "Todos" }));
