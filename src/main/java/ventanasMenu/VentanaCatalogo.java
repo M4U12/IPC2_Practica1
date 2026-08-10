@@ -4,6 +4,29 @@
  */
 package ventanasMenu;
 
+import excepciones.BDException;
+import gestores.GestorMenu;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Base64;
+import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import modelos.Producto;
+
 /**
  *
  * @author ACER
@@ -15,6 +38,60 @@ public class VentanaCatalogo extends javax.swing.JInternalFrame {
      */
     public VentanaCatalogo() {
         initComponents();
+        cargarCatalogoVisual();
+    }
+
+    private void cargarCatalogoVisual() {
+        try {
+            panelContenedor.removeAll();
+
+            GestorMenu gestor = new GestorMenu();
+            List<Producto> lista = gestor.listaProductos();
+
+            for (Producto p : lista) {
+                JPanel tarjeta = new JPanel();
+                tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+                tarjeta.setBorder(BorderFactory.createLineBorder(java.awt.Color.LIGHT_GRAY, 1));
+                tarjeta.setPreferredSize(new Dimension(155, 210));
+                tarjeta.setBackground(Color.WHITE);
+
+                JLabel lblImagen = new JLabel();
+                lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                if (p.getFotografia() != null) {
+                    ImageIcon iconoOriginal = new ImageIcon(p.getFotografia());
+                    Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(140, 140, Image.SCALE_SMOOTH);
+                    lblImagen.setIcon(new ImageIcon(imagenEscalada));
+                } else {
+                    lblImagen.setText("Sin Fotografía");
+                }
+
+                JLabel lblNombre = new JLabel(p.getNombreProducto());
+                lblNombre.setFont(lblNombre.getFont().deriveFont(Font.BOLD));
+                lblNombre.setHorizontalAlignment(SwingConstants.CENTER);
+                lblNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                JLabel lblPrecio = new JLabel("Q " + p.getPrecioVenta());
+                lblPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
+                lblPrecio.setForeground(new Color(0, 153, 0));
+
+                // cración de la tarjeta 
+                tarjeta.add(Box.createVerticalStrut(10)); // espacio superior
+                tarjeta.add(lblImagen);
+                tarjeta.add(Box.createVerticalStrut(10)); // espacio en medio
+                tarjeta.add(lblNombre);
+                tarjeta.add(Box.createVerticalStrut(5));  // espacio en medio
+                tarjeta.add(lblPrecio);
+
+                panelContenedor.add(tarjeta);
+            }
+
+            panelContenedor.revalidate();
+            panelContenedor.repaint();
+
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar el menú: " + ex.getMessage());
+        }
     }
 
     /**
@@ -26,25 +103,118 @@ public class VentanaCatalogo extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        panelContenedor = new javax.swing.JPanel();
+        btnExportarHTML = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
         setTitle("Menu");
+
+        jScrollPane1.setViewportView(panelContenedor);
+
+        btnExportarHTML.setText("Exportar a HTML");
+        btnExportarHTML.addActionListener(this::btnExportarHTMLActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(btnExportarHTML)
+                .addGap(0, 381, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnExportarHTML, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnExportarHTMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarHTMLActionPerformed
+        try {
+            JFileChooser explorador = new JFileChooser();
+            explorador.setDialogTitle("Guardar Menú como HTML");
+
+            // para que se guarde como archivo web
+            FileNameExtensionFilter filtro = new FileNameExtensionFilter("Página Web HTML (*.html)", "html");
+            explorador.setFileFilter(filtro);
+
+            int respuesta = explorador.showSaveDialog(this);
+
+            if (respuesta == JFileChooser.APPROVE_OPTION) {
+                File archivoGuardar = explorador.getSelectedFile();
+
+                if (!archivoGuardar.getName().toLowerCase().endsWith(".html")) {
+                    archivoGuardar = new File(archivoGuardar.getAbsolutePath() + ".html");
+                }
+
+                GestorMenu gestor = new GestorMenu();
+                List<Producto> lista = gestor.listaProductos();
+
+                StringBuilder html = new StringBuilder();
+                html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\">\n");
+                html.append("<title>JavaBeans Café</title>\n");
+
+                // CSS 
+                html.append("<style>\n");
+                html.append("body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; text-align: center; color: #333; margin: 0; padding: 20px; }\n");
+                html.append("h1 { color: #2c3e50; font-size: 2.5em; margin-bottom: 30px; }\n");
+                html.append(".contenedor-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; max-width: 1200px; margin: 0 auto; }\n");
+                html.append(".tarjeta { background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 260px; padding: 20px; transition: transform 0.3s; }\n");
+                html.append(".tarjeta:hover { transform: translateY(-5px); }\n");
+                html.append(".imagen-producto { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }\n");
+                html.append(".nombre { font-size: 1.4em; font-weight: bold; margin: 15px 0 10px 0; color: #34495e; }\n");
+                html.append(".precio { font-size: 1.3em; font-weight: bold; color: #27ae60; margin: 0; }\n");
+                html.append("</style>\n</head>\n<body>\n");
+
+                html.append("<h1>Nuestro Menú</h1>\n");
+                html.append("<div class=\"contenedor-menu\">\n");
+
+                // lista de productos y se haga tarjeta html por cada uno
+                for (Producto p : lista) {
+                    html.append("<div class=\"tarjeta\">\n");
+
+                    if (p.getFotografia() != null) {
+                        String imagenBase64 = Base64.getEncoder().encodeToString(p.getFotografia());
+                        html.append("<img class=\"imagen-producto\" src=\"data:image/jpeg;base64,").append(imagenBase64).append("\" alt=\"").append(p.getNombreProducto()).append("\">\n");
+                    } else {
+                        //si no tiene foto
+                        html.append("<div style=\"height: 200px; display: flex; align-items: center; justify-content: center; background-color: #eee; border-radius: 8px;\">Sin Imagen</div>\n");
+                    }
+
+                    html.append("<div class=\"nombre\">").append(p.getNombreProducto()).append("</div>\n");
+                    html.append("<div class=\"precio\">Q ").append(p.getPrecioVenta()).append("</div>\n");
+
+                    html.append("</div>\n");
+                }
+
+                html.append("</div>\n</body>\n</html>");
+
+                try (FileWriter escritor = new FileWriter(archivoGuardar)) {
+                    escritor.write(html.toString());
+                }
+
+                JOptionPane.showMessageDialog(this, "El menú se ha exportado exitosamente a HTML.\nPuede abrirlo en cualquier navegador de internet.", "Exportación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar exportar el menú: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnExportarHTMLActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExportarHTML;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel panelContenedor;
     // End of variables declaration//GEN-END:variables
 }
