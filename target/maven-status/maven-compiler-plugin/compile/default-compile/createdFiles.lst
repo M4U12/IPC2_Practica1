@@ -7,6 +7,7 @@ modelos\DetalleCuenta.class
 ventanasReportes\VentanaProductosMasVendidos.class
 ventanasReportes\VentanaBajoStock.class
 ventanasGestorPersonal\VentanaEditarEmpleado$1.class
+ventanasInventario\VentanaInventario$1.class
 practica1\Practica1.class
 ventanasInventario\VentanaReabastecerInventario.class
 ventanaMesas\VentanaMonitoreoMesas.class
@@ -27,6 +28,7 @@ ventanasGestorPersonal\VentanaListarPersonal$1.class
 ventanasMenu\VentanaAgregarProducto.class
 gestores\GestorInsumo.class
 modelos\Mesa.class
+ventanasInventario\VentanaNuevoInsumo.class
 ventanasGestorPersonal\VentanaRegistrarEmpleado.class
 gestores\GestorPersonal.class
 excepciones\BDException.class

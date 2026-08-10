@@ -4,6 +4,11 @@
  */
 package ventanasInventario;
 
+import gestores.GestorInsumo;
+import java.util.List;
+import javax.swing.JOptionPane;
+import modelos.Insumo;
+
 /**
  *
  * @author ACER
@@ -15,6 +20,23 @@ public class VentanaReabastecerInventario extends javax.swing.JInternalFrame {
      */
     public VentanaReabastecerInventario() {
         initComponents();
+        cargarInsumosComboBox();
+    }
+
+    private void cargarInsumosComboBox() {
+        try {
+            GestorInsumo gestor = new GestorInsumo();
+            List<Insumo> lista = gestor.listarInventario();
+
+            cbInsumo.removeAllItems();
+
+            for (Insumo i : lista) {
+                cbInsumo.addItem(i.getCodigoInsumo() + " - " + i.getNombreInsumo());
+            }
+
+        } catch (excepciones.BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar insumos: " + ex.getMessage());
+        }
     }
 
     /**
@@ -26,25 +48,115 @@ public class VentanaReabastecerInventario extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblCantidad = new javax.swing.JLabel();
+        txtCantidad = new javax.swing.JTextField();
+        cbInsumo = new javax.swing.JComboBox<>();
+        lblInsumo = new javax.swing.JLabel();
+        btnGuardar = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Reabastecer Inventario");
+
+        lblCantidad.setText("Cantidad");
+
+        cbInsumo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        lblInsumo.setText("Insumo");
+
+        btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbInsumo, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(lblInsumo)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblCantidad)
+                        .addGap(46, 46, 46))
+                    .addComponent(txtCantidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnGuardar)
+                .addGap(154, 154, 154))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(64, 64, 64)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblInsumo)
+                    .addComponent(lblCantidad))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbInsumo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
+                .addComponent(btnGuardar)
+                .addGap(57, 57, 57))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        try {
+            if (cbInsumo.getSelectedIndex() == -1) {
+                JOptionPane.showMessageDialog(this, "Por favor, seleccione un insumo.");
+                return;
+            }
+            String seleccion = cbInsumo.getSelectedItem().toString();
+            String[] partes = seleccion.split(" - ");
+            String codigoInsumo = partes[0];
+
+            if (txtCantidad.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingrese la cantidad a reabastecer.");
+                return;
+            }
+
+            double cantidad = Double.parseDouble(txtCantidad.getText().trim());
+
+            if (cantidad <= 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad a reabastecer debe ser mayor a cero.");
+                return;
+            }
+
+            
+            GestorInsumo gestor = new GestorInsumo();
+            boolean exito = gestor.reabastecerStockActual(codigoInsumo, cantidad);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Inventario reabastecido con éxito");
+                txtCantidad.setText(""); 
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo actualizar el inventario.");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "ERROR: La cantidad debe ser un número válido.");
+        } catch (excepciones.BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + ex.getMessage());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JComboBox<String> cbInsumo;
+    private javax.swing.JLabel lblCantidad;
+    private javax.swing.JLabel lblInsumo;
+    private javax.swing.JTextField txtCantidad;
     // End of variables declaration//GEN-END:variables
 }

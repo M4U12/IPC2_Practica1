@@ -1,13 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
- */
 package ventanasInventario;
 
-/**
- *
- * @author ACER
- */
+import excepciones.BDException;
+import gestores.GestorInsumo;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelos.Insumo;
+
 public class VentanaInventario extends javax.swing.JInternalFrame {
 
     /**
@@ -15,6 +14,59 @@ public class VentanaInventario extends javax.swing.JInternalFrame {
      */
     public VentanaInventario() {
         initComponents();
+        cargarInventario();
+        mostrarAlertasInventario();
+    }
+
+    private void cargarInventario() {
+
+        try {
+            GestorInsumo gestor = new GestorInsumo();
+
+            List<Insumo> listaInsumos = gestor.listarInventario();
+
+            DefaultTableModel modelo = (DefaultTableModel) tablaInventario.getModel();
+            modelo.setRowCount(0);
+
+            for (modelos.Insumo i : listaInsumos) {
+                modelo.addRow(new Object[]{
+                    i.getCodigoInsumo(),
+                    i.getNombreInsumo(),
+                    i.getUnidadMedida(),
+                    i.getCantidadActual(),
+                    i.getStockMinimo(),
+                    "Q " + String.format("%.2f", i.getCostoInsumo())
+                });
+            }
+
+        } catch (excepciones.BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos al cargar inventario: " + ex.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+        }
+    }
+
+    private void mostrarAlertasInventario() {
+        try {
+            GestorInsumo gestor = new GestorInsumo();
+            List<Insumo> listaAlertas = gestor.obtenerInsumosBajoStock();
+
+            if (!listaAlertas.isEmpty()) {
+                String mensaje = "Los siguientes insumos están en stock crítico o agotados:\n\n";
+
+                for (modelos.Insumo i : listaAlertas) {
+                mensaje += "- " + i.getNombreInsumo() + 
+                           " (Quedan: " + i.getCantidadActual() + " " + i.getUnidadMedida() + ")\n";
+            }
+
+                mensaje += "\nConsidere reabastecerlos lo antes posible.";
+
+                JOptionPane.showMessageDialog(this, mensaje, "Alerta de Stock Crítico",JOptionPane.WARNING_MESSAGE);
+            }
+
+        } catch (BDException ex) {
+            System.out.println("Error al cargar alertas: " + ex.getMessage());
+        }
     }
 
     /**
@@ -26,25 +78,66 @@ public class VentanaInventario extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaInventario = new javax.swing.JTable();
+        btnActualizar = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
+        setResizable(true);
         setTitle("Inventario");
+
+        tablaInventario.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Código", "Nombre", "Unidad de Medida", "Cantidad Actual", "Stock Mínimo", "Costo"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tablaInventario);
+
+        btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
+            .addComponent(btnActualizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        cargarInventario();
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablaInventario;
     // End of variables declaration//GEN-END:variables
 }

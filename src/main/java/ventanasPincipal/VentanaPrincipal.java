@@ -6,15 +6,10 @@ package ventanasPincipal;
 
 import gestores.GestorNominas;
 import javax.swing.JOptionPane;
-import ventanasReportes.VentanaBajoStock;
-import ventanasReportes.VentanaFlujoCaja;
-import ventanasReportes.VentanaProductosMasVendidos;
-import ventanasPedidos.VentanaNuevoPedido;
-import ventanasPedidos.VentanaHistorialCuentas;
-import ventanasPedidos.VentanaCuentasAbiertas;
-import ventanaMesas.VentanaMonitoreoMesas;
-import ventanasMenu.VentanaAgregarProducto;
-import ventanasMenu.VentanaCatalogo;
+import ventanasReportes.*;
+import ventanasPedidos.*;
+import ventanaMesas.*;
+import ventanasMenu.*;
 import ventanasInventario.*;
 import ventanasNominas.*;
 import ventanasGestorPersonal.*;
@@ -42,6 +37,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private VentanaFlujoCaja ventanaFlujoCaja = null;
     private VentanaBajoStock ventanaBajoStock = null;
     private VentanaProductosMasVendidos ventanaProdMasVendidos = null;
+    private VentanaNuevoInsumo ventanaNuevoInsumo = null;
 
     /**
      * Creates new form VentanaPrincipal
@@ -81,6 +77,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         inventarioMenu = new javax.swing.JMenu();
         itemVerInventario = new javax.swing.JMenuItem();
         itemReabastecerInventario = new javax.swing.JMenuItem();
+        itemNuevoInsumo = new javax.swing.JMenuItem();
         menuMenu = new javax.swing.JMenu();
         itemCatalogo = new javax.swing.JMenuItem();
         itemAgregarProducto = new javax.swing.JMenuItem();
@@ -147,6 +144,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         itemReabastecerInventario.setText("Reabastecer inventario");
         itemReabastecerInventario.addActionListener(this::itemReabastecerInventarioActionPerformed);
         inventarioMenu.add(itemReabastecerInventario);
+
+        itemNuevoInsumo.setText("Nuevo insumo");
+        itemNuevoInsumo.addActionListener(this::itemNuevoInsumoActionPerformed);
+        inventarioMenu.add(itemNuevoInsumo);
 
         jMenuBar1.add(inventarioMenu);
 
@@ -378,6 +379,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_itemProdMasVendidosActionPerformed
 
+    private void itemNuevoInsumoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemNuevoInsumoActionPerformed
+        if (ventanaNuevoInsumo == null || ventanaNuevoInsumo.isClosed()) {
+            ventanaNuevoInsumo = new VentanaNuevoInsumo();
+            jDesktopPane1.add(ventanaNuevoInsumo);
+            ventanaNuevoInsumo.setVisible(true);
+        } else {
+            ventanaNuevoInsumo.toFront();
+        }
+    }//GEN-LAST:event_itemNuevoInsumoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -415,6 +426,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem itemHistorialPagos;
     private javax.swing.JMenuItem itemListarPersonal;
     private javax.swing.JMenuItem itemMonitoreoMesas;
+    private javax.swing.JMenuItem itemNuevoInsumo;
     private javax.swing.JMenuItem itemNuevoPedido;
     private javax.swing.JMenuItem itemPagos;
     private javax.swing.JMenuItem itemProdMasVendidos;

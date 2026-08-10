@@ -168,4 +168,27 @@ public class GestorInsumo {
         
         return listaAlertas;
     }
+    
+    public boolean verificarAlertaStock(String codigoInsumo) throws BDException {
+        String query = "SELECT Cantidad_actual, Stock_minimo FROM INSUMO WHERE Codigo_insumo = ?";
+        
+        try (Connection connection = conexionDB.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            
+            ps.setString(1, codigoInsumo);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    double cantidadActual = rs.getDouble("Cantidad_actual");
+                    double stockMinimo = rs.getDouble("Stock_minimo");
+                    
+                    return cantidadActual <= stockMinimo; 
+                }
+            }
+        } catch (SQLException e) {
+            throw new BDException("Error al verificar alerta de stock para el insumo: " + e.getMessage(), e);
+        }
+        
+        return false; 
+    }
 }
