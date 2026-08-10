@@ -38,6 +38,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private VentanaBajoStock ventanaBajoStock = null;
     private VentanaProductosMasVendidos ventanaProdMasVendidos = null;
     private VentanaNuevoInsumo ventanaNuevoInsumo = null;
+    private VentanaNuevaMesa nuevaMesa = null;
 
     /**
      * Creates new form VentanaPrincipal
@@ -83,6 +84,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         itemAgregarProducto = new javax.swing.JMenuItem();
         mesasMenu = new javax.swing.JMenu();
         itemMonitoreoMesas = new javax.swing.JMenuItem();
+        itemMesaNueva = new javax.swing.JMenuItem();
         pedidoMenu = new javax.swing.JMenu();
         itemNuevoPedido = new javax.swing.JMenuItem();
         itemCuentasAbiertas = new javax.swing.JMenuItem();
@@ -168,6 +170,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         itemMonitoreoMesas.setText("Monitoreo de mesas");
         itemMonitoreoMesas.addActionListener(this::itemMonitoreoMesasActionPerformed);
         mesasMenu.add(itemMonitoreoMesas);
+
+        itemMesaNueva.setText("Agregar mesa nueva");
+        itemMesaNueva.addActionListener(this::itemMesaNuevaActionPerformed);
+        mesasMenu.add(itemMesaNueva);
 
         jMenuBar1.add(mesasMenu);
 
@@ -389,6 +395,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_itemNuevoInsumoActionPerformed
 
+    private void itemMesaNuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemMesaNuevaActionPerformed
+        if (nuevaMesa == null || nuevaMesa.isClosed()) {
+            nuevaMesa = new VentanaNuevaMesa();
+            jDesktopPane1.add(nuevaMesa);
+            nuevaMesa.setVisible(true);
+        } else {
+            nuevaMesa.toFront();
+        }
+    }//GEN-LAST:event_itemMesaNuevaActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -425,6 +441,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem itemHistorialCuentas;
     private javax.swing.JMenuItem itemHistorialPagos;
     private javax.swing.JMenuItem itemListarPersonal;
+    private javax.swing.JMenuItem itemMesaNueva;
     private javax.swing.JMenuItem itemMonitoreoMesas;
     private javax.swing.JMenuItem itemNuevoInsumo;
     private javax.swing.JMenuItem itemNuevoPedido;

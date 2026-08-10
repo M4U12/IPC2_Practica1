@@ -4,6 +4,13 @@
  */
 package ventanaMesas;
 
+import excepciones.BDException;
+import gestores.GestorMesa;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelos.Mesa;
+
 /**
  *
  * @author ACER
@@ -15,6 +22,30 @@ public class VentanaMonitoreoMesas extends javax.swing.JInternalFrame {
      */
     public VentanaMonitoreoMesas() {
         initComponents();
+        cargarMesas();
+    }
+
+    private void cargarMesas() {
+        try {
+            GestorMesa gestor = new GestorMesa();
+            List<Mesa> listaMesas = gestor.listarMesas(); //[cite: 5]
+
+            DefaultTableModel modelo = (DefaultTableModel) tableMesas.getModel();
+            modelo.setRowCount(0); 
+
+            for (Mesa m : listaMesas) {
+                modelo.addRow(new Object[]{
+                    m.getNumeroMesa(),
+                    m.getCapacidad(),
+                    m.getEstadoActual()
+                });
+            }
+
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las mesas: " + ex.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+        }
     }
 
     /**
@@ -26,25 +57,65 @@ public class VentanaMonitoreoMesas extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnActualizar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tableMesas = new javax.swing.JTable();
+
         setClosable(true);
         setIconifiable(true);
+        setResizable(true);
         setTitle("Monitoreo de Mesas");
+
+        btnActualizar.setText("ACTUALIZAR");
+        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
+
+        tableMesas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Numero de mesa", "Capacidad de mesa", "Estado"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tableMesas);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(btnActualizar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(btnActualizar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        cargarMesas();
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tableMesas;
     // End of variables declaration//GEN-END:variables
 }

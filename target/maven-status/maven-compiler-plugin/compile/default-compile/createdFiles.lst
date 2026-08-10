@@ -26,10 +26,12 @@ ventanasGestorPersonal\VentanaListarPersonal.class
 dbconection\DBConnection.class
 ventanasGestorPersonal\VentanaListarPersonal$1.class
 ventanasMenu\VentanaAgregarProducto.class
+ventanaMesas\VentanaNuevaMesa.class
 gestores\GestorInsumo.class
 modelos\Mesa.class
 ventanasInventario\VentanaNuevoInsumo.class
 ventanasGestorPersonal\VentanaRegistrarEmpleado.class
+ventanaMesas\VentanaMonitoreoMesas$1.class
 gestores\GestorPersonal.class
 excepciones\BDException.class
 modelos\Insumo.class
