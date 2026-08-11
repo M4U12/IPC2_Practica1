@@ -137,7 +137,7 @@ public class GestorMenu {
     public boolean descontarInsumoPorVentas(String codigoProducto) throws BDException {
         List<Receta> ingredientes = obtenerRecetaProducto(codigoProducto); 
         GestorInsumo gestorInsumos = new GestorInsumo();
-        for (modelos.Receta ingrediente : ingredientes) {
+        for (Receta ingrediente : ingredientes) {
             boolean exito = gestorInsumos.descontarStockActual(
                     ingrediente.getCodigoInsumo(),
                     ingrediente.getCantidad()

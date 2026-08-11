@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.Insumo;
+import utilidades.AlertaStock;
 
 public class VentanaInventario extends javax.swing.JInternalFrame {
 
@@ -15,7 +16,8 @@ public class VentanaInventario extends javax.swing.JInternalFrame {
     public VentanaInventario() {
         initComponents();
         cargarInventario();
-        mostrarAlertasInventario();
+        AlertaStock alerta = new AlertaStock();
+        alerta.revisarInventario(this);
     }
 
     private void cargarInventario() {
@@ -132,6 +134,8 @@ public class VentanaInventario extends javax.swing.JInternalFrame {
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         cargarInventario();
+        AlertaStock alerta = new AlertaStock();
+        alerta.revisarInventario(this);
     }//GEN-LAST:event_btnActualizarActionPerformed
 
 

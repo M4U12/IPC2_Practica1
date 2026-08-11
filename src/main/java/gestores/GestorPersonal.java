@@ -130,4 +130,20 @@ public class GestorPersonal {
         return null;
     }
 
+    public List<String> listarMeserosActivos() throws BDException {
+        List<String> listaMeseros = new ArrayList<>();
+        String query = "SELECT DPI, Nombre FROM EMPLEADO WHERE rol = 'MESERO' and estado = 1";
+
+        try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                String datosMesero = rs.getString("DPI") + " - " + rs.getString("Nombre");
+                listaMeseros.add(datosMesero);
+            }
+
+        } catch (SQLException e) {
+            throw new BDException("Error al consultar los meseros: " + e.getMessage(), e);
+        }
+        return listaMeseros;
+    }
 }

@@ -6,6 +6,7 @@ package ventanasPincipal;
 
 import gestores.GestorNominas;
 import javax.swing.JOptionPane;
+import utilidades.AlertaStock;
 import ventanasReportes.*;
 import ventanasPedidos.*;
 import ventanaMesas.*;
@@ -45,6 +46,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      */
     public VentanaPrincipal() {
         initComponents();
+        AlertaStock alerta = new AlertaStock();
+        alerta.revisarInventario(this);
         try {
             GestorNominas gestor = new GestorNominas();
             String mensajeAlerta = gestor.verificarYGenerarPlanillaAutomatica();

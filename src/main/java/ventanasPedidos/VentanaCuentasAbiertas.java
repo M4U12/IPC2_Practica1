@@ -4,6 +4,12 @@
  */
 package ventanasPedidos;
 
+import gestores.GestorCuenta;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelos.Cuenta;
+
 /**
  *
  * @author ACER
@@ -15,6 +21,30 @@ public class VentanaCuentasAbiertas extends javax.swing.JInternalFrame {
      */
     public VentanaCuentasAbiertas() {
         initComponents();
+        cargarCuentas();
+    }
+
+    public void cargarCuentas() {
+        try {
+            DefaultTableModel modelo = (DefaultTableModel) tablaCuentas.getModel();
+            modelo.setRowCount(0);
+
+            GestorCuenta gestor = new GestorCuenta();
+            // Usamos el método nuevo que acabamos de crear en GestorCuenta
+            List<Cuenta> lista = gestor.listarTodasCuentasAbiertas();
+
+            for (modelos.Cuenta c : lista) {
+                modelo.addRow(new Object[]{
+                    c.getCodigoCuenta(),
+                    c.getNumeroMesa(),
+                    c.getDpiMesero(),
+                    c.getHoraOcupacion(),
+                    c.getTotalCuenta()
+                });
+            }
+        } catch (excepciones.BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar cuentas: " + ex.getMessage());
+        }
     }
 
     /**
@@ -26,25 +56,158 @@ public class VentanaCuentasAbiertas extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnañadir = new javax.swing.JButton();
+        btnPagar = new javax.swing.JButton();
+        btnDetalles = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaCuentas = new javax.swing.JTable();
+        btnActualizar = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
         setTitle("Cuentas abiertas");
+
+        btnañadir.setText("Añadir");
+        btnañadir.addActionListener(this::btnañadirActionPerformed);
+
+        btnPagar.setText("Pagar");
+        btnPagar.addActionListener(this::btnPagarActionPerformed);
+
+        btnDetalles.setText("Detalles");
+        btnDetalles.addActionListener(this::btnDetallesActionPerformed);
+
+        tablaCuentas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Código", "Numero de mesa", "Dpi de Mesero", "Hora de Ocupacion", "Total"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaCuentas);
+
+        btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(132, 132, 132)
+                .addComponent(btnañadir)
+                .addGap(64, 64, 64)
+                .addComponent(btnPagar)
+                .addGap(31, 31, 31)
+                .addComponent(btnDetalles)
+                .addGap(30, 30, 30)
+                .addComponent(btnActualizar)
+                .addContainerGap(133, Short.MAX_VALUE))
+            .addComponent(jScrollPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnañadir, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDetalles, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
+        int fila = tablaCuentas.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una cuenta de la tabla para pagar.");
+            return;
+        }
+
+        String codigoCuenta = tablaCuentas.getValueAt(fila, 0).toString();
+        double totalCuenta = Double.parseDouble(tablaCuentas.getValueAt(fila, 4).toString());
+
+        try {
+            String propinaStr = JOptionPane.showInputDialog(this,
+                    "Total actual: Q " + totalCuenta + "\nIngrese el monto de la propina (0 si no dejarás):", "Cobrar Cuenta", JOptionPane.QUESTION_MESSAGE);
+
+            if (propinaStr == null || propinaStr.trim().isEmpty()) {
+                return;
+            }
+
+            double propina = Double.parseDouble(propinaStr.trim());
+            if (propina < 0) {
+                JOptionPane.showMessageDialog(this, "La propina no puede ser negativa.");
+                return;
+            }
+
+            double totalFinal = totalCuenta + propina;
+
+            GestorCuenta gestor = new GestorCuenta();
+            boolean exito = gestor.cobrarCuenta(codigoCuenta, totalFinal, propina);
+
+            if (exito) {
+                int numMesa = Integer.parseInt(tablaCuentas.getValueAt(fila, 1).toString());
+                new gestores.GestorMesa().cambiarEstadoMesa(numMesa, "LIBRE");
+
+                JOptionPane.showMessageDialog(this, "Cuenta cobrada con éxito. Total final: Q " + totalFinal);
+                cargarCuentas();
+            }
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Ingrese un número válido para la propina.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al cobrar: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnPagarActionPerformed
+
+    private void btnDetallesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetallesActionPerformed
+        int fila = tablaCuentas.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una cuenta.");
+            return;
+        }
+        String codigo = tablaCuentas.getValueAt(fila, 0).toString();
+
+        DialogDetalleCuenta dialogo = new DialogDetalleCuenta(null, true, codigo);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setVisible(true);
+    }//GEN-LAST:event_btnDetallesActionPerformed
+
+    private void btnañadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnañadirActionPerformed
+        int fila = tablaCuentas.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una cuenta.");
+            return;
+        }
+        String codigo = tablaCuentas.getValueAt(fila, 0).toString();
+
+        DialogAñadirProducto dialogo = new DialogAñadirProducto(null, true, codigo);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setVisible(true);
+        cargarCuentas();
+    }//GEN-LAST:event_btnañadirActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        cargarCuentas();
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnDetalles;
+    private javax.swing.JButton btnPagar;
+    private javax.swing.JButton btnañadir;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablaCuentas;
     // End of variables declaration//GEN-END:variables
 }

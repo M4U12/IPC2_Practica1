@@ -9,6 +9,7 @@ ventanasReportes\VentanaBajoStock.class
 ventanasGestorPersonal\VentanaEditarEmpleado$1.class
 ventanasInventario\VentanaInventario$1.class
 practica1\Practica1.class
+utilidades\AlertaStock.class
 ventanasInventario\VentanaReabastecerInventario.class
 ventanaMesas\VentanaMonitoreoMesas.class
 gestores\GestorCuenta.class
@@ -17,7 +18,9 @@ ventanasPedidos\VentanaCuentasAbiertas.class
 ventanasPedidos\VentanaNuevoPedido.class
 ventanasNominas\VentanaPagos.class
 modelos\Cuenta.class
+ventanasPedidos\DialogDetalleCuenta.class
 gestores\GestorMenu.class
+ventanasPedidos\VentanaNuevoPedido$1.class
 ventanasPincipal\VentanaPrincipal.class
 ventanasGestorPersonal\VentanaEditarEmpleado.class
 gestores\GestorNominas.class
@@ -32,6 +35,7 @@ modelos\Mesa.class
 ventanasInventario\VentanaNuevoInsumo.class
 ventanasGestorPersonal\VentanaRegistrarEmpleado.class
 ventanaMesas\VentanaMonitoreoMesas$1.class
+ventanasPedidos\DialogAñadirProducto.class
 gestores\GestorPersonal.class
 excepciones\BDException.class
 modelos\Insumo.class

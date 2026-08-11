@@ -4,9 +4,11 @@ import dbconection.DBConnection;
 import excepciones.BDException;
 import modelos.Insumo;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,28 +64,48 @@ public class GestorInsumo {
         return inventario;
     }
     
-    public boolean reabastecerStockActual(String codigoInsumo, double cantidad) throws BDException{
-        double stockAntiguo = obtenerStockActual(codigoInsumo);
-        if (stockAntiguo == -1.0) {
-            System.out.println("El insumo no existe en la base de datos.");
-            return false;
-        }
-        double nuevoStock = stockAntiguo + cantidad;
-        
-        String query = "UPDATE INSUMO SET Cantidad_actual = Cantidad_actual + ? WHERE Codigo_insumo = ?";
+    public boolean reabastecerStockActual(String codigoInsumo, double cantidad) throws BDException {
+        String queryCosto = "SELECT Costo_insumo FROM INSUMO WHERE Codigo_insumo = ?";
+        String queryUpdate = "UPDATE INSUMO SET Cantidad_actual = Cantidad_actual + ? WHERE Codigo_insumo = ?";
+        String queryInsertCompra = "INSERT INTO COMPRA_INSUMO (Codigo_insumo, Fecha_compra, Cantidad_comprada, Total_gastado) VALUES (?, ?, ?, ?)";
           
-        try (Connection connection = conexionDB.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection connection = conexionDB.getConnection()) {
             
-
-            ps.setDouble(1, cantidad);
-            ps.setString(2, codigoInsumo);
+            double costoUnitario = 0;
             
-            int filasAfectadas = ps.executeUpdate();
-            return filasAfectadas > 0;
+            try (PreparedStatement psCosto = connection.prepareStatement(queryCosto)) {
+                psCosto.setString(1, codigoInsumo);
+                try (ResultSet rs = psCosto.executeQuery()) {
+                    if (rs.next()) {
+                        costoUnitario = rs.getDouble("Costo_insumo");
+                    } else {
+                        return false; // el insumo no existe
+                    }
+                }
+            }
+            
+            
+            double costoTotalGasto = cantidad * costoUnitario;
+            
+            try (PreparedStatement psUpdate = connection.prepareStatement(queryUpdate)) {
+                psUpdate.setDouble(1, cantidad);
+                psUpdate.setString(2, codigoInsumo);
+                psUpdate.executeUpdate();
+            }
+            
+            // para el reporte de flujo de caja
+            try (PreparedStatement psInsert = connection.prepareStatement(queryInsertCompra)) {
+                psInsert.setString(1, codigoInsumo);
+                psInsert.setDate(2, Date.valueOf(LocalDate.now()));
+                psInsert.setDouble(3, cantidad);
+                psInsert.setDouble(4, costoTotalGasto); 
+                
+                int filasAfectadas = psInsert.executeUpdate();
+                return filasAfectadas > 0;
+            }
             
         } catch (SQLException e) {
-            throw new BDException("Error al reabastecer el insumo: " + e.getMessage(), e);
+            throw new BDException("Error al reabastecer y registrar la compra: " + e.getMessage(), e);
         }
     }
     
@@ -108,6 +130,7 @@ public class GestorInsumo {
             throw new BDException("Error al consultar el stock actual: " + e.getMessage(), e);
         }
     }
+    
     public boolean descontarStockActual(String codigoInsumo, double cantidadUsada)throws BDException{
         double stockActual = obtenerStockActual(codigoInsumo);
         

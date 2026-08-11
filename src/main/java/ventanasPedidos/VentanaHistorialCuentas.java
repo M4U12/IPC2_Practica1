@@ -4,6 +4,12 @@
  */
 package ventanasPedidos;
 
+import gestores.GestorCuenta;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelos.Cuenta;
+
 /**
  *
  * @author ACER
@@ -15,6 +21,35 @@ public class VentanaHistorialCuentas extends javax.swing.JInternalFrame {
      */
     public VentanaHistorialCuentas() {
         initComponents();
+        cargarHistorial();
+    }
+
+    public void cargarHistorial() {
+        try {
+            DefaultTableModel modelo = (DefaultTableModel) tablaHistorial.getModel();
+            modelo.setRowCount(0);
+
+            GestorCuenta gestor = new GestorCuenta();
+            List<Cuenta> lista = gestor.listarHistorialCuentas();
+
+            for (modelos.Cuenta c : lista) {
+                String horaSalida = (c.getHoraLiberacion() != null) ? c.getHoraLiberacion().toString() : "En curso...";
+                
+                modelo.addRow(new Object[]{
+                    c.getCodigoCuenta(),
+                    c.getFecha(),
+                    c.getHoraOcupacion(),
+                    horaSalida,
+                    c.getEstadoCuenta(),
+                    "Mesa " + c.getNumeroMesa(),
+                    c.getDpiMesero(),
+                    "Q " + c.getPropina(),
+                    "Q " + c.getTotalCuenta()
+                });
+            }
+        } catch (excepciones.BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar el historial: " + ex.getMessage());
+        }
     }
 
     /**
@@ -26,25 +61,68 @@ public class VentanaHistorialCuentas extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaHistorial = new javax.swing.JTable();
+        btnDetalles = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Historial de cuentas");
+
+        tablaHistorial.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Código", "Fecha", "Hora Ocupación", "Hora Liberación", "Estado", "Mesa", "DPI Mesero", "Propina", "Total"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaHistorial);
+
+        btnDetalles.setText("Ver Detalles");
+        btnDetalles.addActionListener(this::btnDetallesActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 837, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnDetalles, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(btnDetalles, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnDetallesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetallesActionPerformed
+        int fila = tablaHistorial.getSelectedRow();
+
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una cuenta del historial.");
+            return;
+        }
+        String codigo = tablaHistorial.getValueAt(fila, 0).toString();
+        DialogDetalleCuenta dialogo = new DialogDetalleCuenta(null, true, codigo);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setVisible(true);
+    }//GEN-LAST:event_btnDetallesActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDetalles;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablaHistorial;
     // End of variables declaration//GEN-END:variables
 }

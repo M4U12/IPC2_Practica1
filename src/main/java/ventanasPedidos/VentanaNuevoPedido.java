@@ -4,6 +4,26 @@
  */
 package ventanasPedidos;
 
+import excepciones.BDException;
+import gestores.GestorCuenta;
+import gestores.GestorInsumo;
+import gestores.GestorMenu;
+import gestores.GestorMesa;
+import gestores.GestorNominas;
+import gestores.GestorPersonal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelos.Cuenta;
+import modelos.DetalleCuenta;
+import modelos.Mesa;
+import modelos.Producto;
+import modelos.Receta;
+import utilidades.AlertaStock;
+
 /**
  *
  * @author ACER
@@ -15,6 +35,80 @@ public class VentanaNuevoPedido extends javax.swing.JInternalFrame {
      */
     public VentanaNuevoPedido() {
         initComponents();
+        ((DefaultTableModel) tablaPedido.getModel()).setRowCount(0);
+        cargarMesas();
+        cargarMeseros();
+        cargarCodigoAutomatico();
+        cargarProductos();
+    }
+
+    private void cargarMesas() {
+        try {
+            GestorMesa gestor = new GestorMesa();
+            List<Mesa> lista = gestor.listarMesasDisponibles();
+
+            cbMesas.removeAllItems();
+
+            if (lista.isEmpty()) {
+                cbMesas.addItem("No hay mesas libres");
+                cbMesas.setEnabled(false);
+            } else {
+                cbMesas.setEnabled(true);
+                for (Mesa m : lista) {
+                    cbMesas.addItem("Mesa " + m.getNumeroMesa() + " - (" + m.getCapacidad() + " personas)");
+                }
+            }
+
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar mesas: " + ex.getMessage());
+        }
+    }
+
+    private void cargarMeseros() {
+        try {
+            GestorPersonal gestorEmp = new GestorPersonal();
+            List<String> meseros = gestorEmp.listarMeserosActivos();
+
+            cbMeseros.removeAllItems();
+
+            if (meseros.isEmpty()) {
+                cbMeseros.addItem("No hay meseros disponibles");
+                cbMesas.setEnabled(false);
+            } else {
+                cbMesas.setEditable(true);
+                for (String m : meseros) {
+                    cbMeseros.addItem(m);
+                }
+            }
+
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar meseros: " + ex.getMessage());
+        }
+    }
+
+    private void cargarCodigoAutomatico() {
+        try {
+            GestorCuenta gestor = new GestorCuenta();
+            String nuevoCodigo = gestor.generarCodigoCuenta();
+            lblCodigoAutomatico.setText(nuevoCodigo);
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al generar código: " + ex.getMessage());
+        }
+    }
+
+    private void cargarProductos() {
+        try {
+            GestorMenu gestor = new GestorMenu();
+            List<Producto> menu = gestor.listaProductos(); 
+
+            cbProductos.removeAllItems();
+
+            for (modelos.Producto p : menu) {
+                cbProductos.addItem(p.getCodigoProducto() + " - " + p.getNombreProducto() + " - " + "Q " + p.getPrecioVenta());
+            }
+        } catch (excepciones.BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar el menú: " + ex.getMessage());
+        }
     }
 
     /**
@@ -26,25 +120,345 @@ public class VentanaNuevoPedido extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        cbMesas = new javax.swing.JComboBox<>();
+        cbMeseros = new javax.swing.JComboBox<>();
+        lblCodigo = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        lblCodigoAutomatico = new javax.swing.JLabel();
+        lblNumMesa = new javax.swing.JLabel();
+        lblMesero = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        cbProductos = new javax.swing.JComboBox<>();
+        txtCantidad = new javax.swing.JTextField();
+        lblCantidad = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaPedido = new javax.swing.JTable();
+        btnAñadir = new javax.swing.JButton();
+        btnAbrirCuenta = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Nuevo Pedido");
+
+        cbMesas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbMesas.addActionListener(this::cbMesasActionPerformed);
+
+        cbMeseros.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        lblCodigo.setText("Codigo de cuenta:");
+
+        lblNumMesa.setText("Numero de Mesa");
+
+        lblMesero.setText("Meseo");
+
+        jLabel2.setText("Producto");
+
+        cbProductos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        lblCantidad.setText("Cantidad");
+
+        tablaPedido.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Código", "Nombre", "Cantidad", "Subtotal"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tablaPedido);
+
+        btnAñadir.setText("Añadir a la orden");
+        btnAñadir.addActionListener(this::btnAñadirActionPerformed);
+
+        btnAbrirCuenta.setText("Abrir cuenta");
+        btnAbrirCuenta.addActionListener(this::btnAbrirCuentaActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addComponent(lblNumMesa))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(8, 8, 8)
+                                    .addComponent(jLabel2))
+                                .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblCodigo)
+                            .addComponent(cbMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(63, 63, 63)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblMesero))
+                                    .addComponent(jLabel1)
+                                    .addComponent(cbMeseros, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(lblCodigoAutomatico, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(84, 84, 84)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(15, 15, 15)
+                                        .addComponent(lblCantidad))
+                                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(122, 122, 122)
+                        .addComponent(btnAñadir, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(btnAbrirCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 215, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblCodigo)
+                    .addComponent(lblCodigoAutomatico, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addGap(33, 33, 33)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblNumMesa)
+                    .addComponent(lblMesero))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbMeseros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(lblCantidad))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addComponent(btnAñadir)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
+                .addComponent(btnAbrirCuenta)
+                .addGap(15, 15, 15))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void cbMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbMesasActionPerformed
+
+    }//GEN-LAST:event_cbMesasActionPerformed
+
+    private void btnAñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAñadirActionPerformed
+        try {
+            if (cbProductos.getSelectedIndex() == -1) {
+                JOptionPane.showMessageDialog(this, "Seleccione un producto del menú.");
+                return;
+            }
+            if (txtCantidad.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese la cantidad solicitada.");
+                return;
+            }
+
+            int cantidad = Integer.parseInt(txtCantidad.getText().trim());
+            if (cantidad <= 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0.");
+                return;
+            }
+
+            String[] partesProducto = cbProductos.getSelectedItem().toString().split(" - ");
+            String codigo = partesProducto[0];
+            String nombre = partesProducto[1];
+            String precioLimpio = partesProducto[2].replace("Q", "").trim();
+            double precio = Double.parseDouble(precioLimpio);
+
+            DefaultTableModel modelo = (DefaultTableModel) tablaPedido.getModel();
+
+            // si se añade otra vez el producto al pedido que lo sume con la cantidad que ya se había seleccionado
+            boolean productoEncontrado = false;
+
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                String codigoEnTabla = modelo.getValueAt(i, 0).toString();
+
+                if (codigoEnTabla.equals(codigo)) {
+                    // ya está en la tabla se suma la cantidad
+                    int cantidadExistente = Integer.parseInt(modelo.getValueAt(i, 2).toString());
+                    int nuevaCantidad = cantidadExistente + cantidad;
+                    double nuevoSubtotal = nuevaCantidad * precio;
+
+                    // actualización de celdas
+                    modelo.setValueAt(nuevaCantidad, i, 2);
+                    modelo.setValueAt(nuevoSubtotal, i, 3);
+
+                    productoEncontrado = true;
+                    break; 
+                }
+            }
+
+            // si el ciclo terminó y no encontró el producto, se agrega como fila nueva
+            if (!productoEncontrado) {
+                double subtotal = cantidad * precio;
+                modelo.addRow(new Object[]{codigo, nombre, cantidad, subtotal});
+            }
+            txtCantidad.setText("");
+            AlertaStock alerta = new AlertaStock();
+            alerta.revisarInventario(this);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La cantidad debe ser un número entero válido.");
+        }
+    }//GEN-LAST:event_btnAñadirActionPerformed
+
+    private void btnAbrirCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirCuentaActionPerformed
+        try {
+            DefaultTableModel modelo = (DefaultTableModel) tablaPedido.getModel();
+            if (modelo.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "La orden está vacía. Añada al menos un producto.");
+                return;
+            }
+            
+            GestorMenu gestorMenu = new GestorMenu();
+            GestorInsumo gestorInsumo = new GestorInsumo();
+            List<String> listaCodigos = new ArrayList<>();
+            List<Double> listaCantidades = new ArrayList<>();
+
+ 
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                String codProd = modelo.getValueAt(i, 0).toString();
+                int cantPedida = Integer.parseInt(modelo.getValueAt(i, 2).toString());
+                
+                List<Receta> receta = gestorMenu.obtenerRecetaProducto(codProd);
+                
+                for (Receta ing : receta) {
+                    double totalPorIngrediente = ing.getCantidad() * cantPedida;
+                    String codIns = ing.getCodigoInsumo();
+                    
+                    // se busca si el insumo ya esta en la lista temporal
+                    int posicion = listaCodigos.indexOf(codIns);
+                    
+                    if (posicion != -1) {
+                        // si ya existe se suma la nueva cantidad a la que ya tenia
+                        double cantidadAcumulada = listaCantidades.get(posicion);
+                        listaCantidades.set(posicion, cantidadAcumulada + totalPorIngrediente);
+                    } else {
+                        // si no existe lo agrega por primera vez al final de ambas listas
+                        listaCodigos.add(codIns);
+                        listaCantidades.add(totalPorIngrediente);
+                    }
+                }
+            }
+
+            // comparacion entre lo que se necesita y lo que hay en existencia
+            for (int i = 0; i < listaCodigos.size(); i++) {
+                String codInsumo = listaCodigos.get(i);
+                double cantidadRequerida = listaCantidades.get(i);
+                
+                double stockActual = gestorInsumo.obtenerStockActual(codInsumo); 
+                
+                if (stockActual < cantidadRequerida) {
+                    JOptionPane.showMessageDialog(this, 
+                        "INVENTARIO INSUFICIENTE\nNo se puede procesar el pedido a cocina.\n\n" +
+                        "Código del Insumo faltante: " + codInsumo + "\n" +
+                        "Cantidad requerida: " + cantidadRequerida + "\n" +
+                        "Disponible en bodega: " + (stockActual == -1.0 ? "0.0" : stockActual),
+                        "Error de Stock Crítico", JOptionPane.ERROR_MESSAGE);
+                    return; 
+                }
+            }
+            
+            
+            
+            String[] partesMesa = cbMesas.getSelectedItem().toString().split(" ");
+            int numeroMesa = Integer.parseInt(partesMesa[1]);
+
+            String[] partesMesero = cbMeseros.getSelectedItem().toString().split(" - ");
+            String dpiMesero = partesMesero[0];
+
+            String codigoCuenta = lblCodigoAutomatico.getText().trim();
+
+            Cuenta nuevaCuenta = new Cuenta(
+                    codigoCuenta,
+                    LocalDate.now(),
+                    LocalTime.now(),
+                    null,
+                    "ABIERTA",
+                    0.0, // inicia en 0, el GestorCuenta lo irá sumando solito
+                    0.0,
+                    numeroMesa,
+                    dpiMesero
+            );
+
+            GestorCuenta gestorCuenta = new GestorCuenta();
+            boolean cuentaAbierta = gestorCuenta.abrirCuenta(nuevaCuenta);
+
+            if (cuentaAbierta) {
+                for (int i = 0; i < modelo.getRowCount(); i++) {
+                    String codProd = modelo.getValueAt(i, 0).toString();
+                    int cant = Integer.parseInt(modelo.getValueAt(i, 2).toString());
+                    double subT = Double.parseDouble(modelo.getValueAt(i, 3).toString());
+
+                    DetalleCuenta detalle = new DetalleCuenta(codigoCuenta, cant, codProd, subT);
+                    gestorCuenta.agregarDetalle(detalle);
+
+                    // por cada plato pedido, se descuentan los ingredientes de la bodega
+                    for (int c = 0; c < cant; c++) {
+                        gestorMenu.descontarInsumoPorVentas(codProd);
+                    }
+                }
+
+                GestorMesa gestorMesa = new GestorMesa();
+                gestorMesa.cambiarEstadoMesa(numeroMesa, "OCUPADA");
+
+                JOptionPane.showMessageDialog(this, "Cuenta abierta y orden enviada a cocina");
+                modelo.setRowCount(0);
+                cargarCodigoAutomatico();
+                cargarMesas();
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al abrir la cuenta: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnAbrirCuentaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAbrirCuenta;
+    private javax.swing.JButton btnAñadir;
+    private javax.swing.JComboBox<String> cbMesas;
+    private javax.swing.JComboBox<String> cbMeseros;
+    private javax.swing.JComboBox<String> cbProductos;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblCantidad;
+    private javax.swing.JLabel lblCodigo;
+    private javax.swing.JLabel lblCodigoAutomatico;
+    private javax.swing.JLabel lblMesero;
+    private javax.swing.JLabel lblNumMesa;
+    private javax.swing.JTable tablaPedido;
+    private javax.swing.JTextField txtCantidad;
     // End of variables declaration//GEN-END:variables
 }
