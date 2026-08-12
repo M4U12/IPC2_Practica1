@@ -49,7 +49,7 @@ public class VentanaAgregarProducto extends javax.swing.JInternalFrame {
             for (Insumo i : lista) {
                 cbIngredientes.addItem(i.getCodigoInsumo() + " - " + i.getNombreInsumo());
             }
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar insumos: " + ex.getMessage());
         }
     }

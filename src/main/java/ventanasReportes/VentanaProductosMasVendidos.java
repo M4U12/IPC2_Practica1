@@ -4,6 +4,19 @@
  */
 package ventanasReportes;
 
+import excepciones.BDException;
+import gestores.GestorReportes;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author ACER
@@ -16,6 +29,7 @@ public class VentanaProductosMasVendidos extends javax.swing.JInternalFrame {
     public VentanaProductosMasVendidos() {
         initComponents();
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -26,25 +40,184 @@ public class VentanaProductosMasVendidos extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaRanking = new javax.swing.JTable();
+        btnGenerar = new javax.swing.JButton();
+        btnExportar = new javax.swing.JButton();
+        lblFechaInicio = new javax.swing.JLabel();
+        txtFechaInicio = new javax.swing.JTextField();
+        txtFechaFin = new javax.swing.JTextField();
+        lblFin = new javax.swing.JLabel();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Productos mas vendidos");
+
+        tablaRanking.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Código", "Nombre", "Total vendidos", "Ingresos generados"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaRanking);
+
+        btnGenerar.setText("Generar");
+        btnGenerar.addActionListener(this::btnGenerarActionPerformed);
+
+        btnExportar.setText("Exportar");
+        btnExportar.addActionListener(this::btnExportarActionPerformed);
+
+        lblFechaInicio.setText("Fecha de inicio");
+
+        txtFechaInicio.setText("YYYY-MM-DD");
+
+        txtFechaFin.setText("YYYY-MM-DD");
+
+        lblFin.setText("Fecha de fin");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblFechaInicio)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(56, 56, 56)
+                .addComponent(lblFin)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addComponent(btnGenerar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnExportar)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnGenerar)
+                    .addComponent(btnExportar)
+                    .addComponent(lblFechaInicio)
+                    .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFin))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        try {
+            String strInicio = txtFechaInicio.getText().trim();
+            String strFin = txtFechaFin.getText().trim();
+            
+            LocalDate fechaInicio = null;
+            LocalDate fechaFin = null;
+            
+            if (!strInicio.isEmpty() && !strFin.isEmpty()) {
+                fechaInicio = LocalDate.parse(strInicio);
+                fechaFin = LocalDate.parse(strFin);
+                
+                if (fechaInicio.isAfter(fechaFin)) {
+                    JOptionPane.showMessageDialog(this, "La fecha de inicio no puede ser mayor a la fecha de fin.");
+                    return;
+                }
+            } else if (!strInicio.isEmpty() || !strFin.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debe llenar ambas fechas o dejar ambas vacías para ver el historial completo.");
+                return;
+            }
+            
+            GestorReportes gestor = new GestorReportes();
+            List<Object[]> ranking = gestor.obtenerProductosMasVendidos(fechaInicio, fechaFin);
+            
+            DefaultTableModel modelo = (DefaultTableModel) tablaRanking.getModel();
+            modelo.setRowCount(0); 
+            
+            if (ranking.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No hay ventas registradas en este período.");
+                return;
+            }
+            
+            for (Object[] fila : ranking) {
+                modelo.addRow(new Object[]{
+                    fila[0],
+                    fila[1],
+                    fila[2],
+                    String.format("%.2f", (Double) fila[3]) 
+                });
+            }
+            
+            txtFechaInicio.setEditable(false);
+            txtFechaFin.setEditable(false);
+            btnGenerar.setEnabled(false);
+            
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto. Use AAAA-MM-DD");
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + ex.getMessage());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnGenerarActionPerformed
+
+    private void btnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarActionPerformed
+        if (tablaRanking.getRowCount() == 0 || tablaRanking.getValueAt(0, 0) == null || tablaRanking.getValueAt(0, 0).toString().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay datos para exportar.");
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar Ranking de Productos");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Páginas Web HTML (*.html)", "html"));
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+            if (!archivo.getName().toLowerCase().endsWith(".html")) {
+                archivo = new File(archivo.getParentFile(), archivo.getName() + ".html");
+            }
+
+            String periodo = txtFechaInicio.getText().trim() + " al " + txtFechaFin.getText().trim();
+            
+            List<Object[]> datosExtraidos = new ArrayList<>();
+            DefaultTableModel modelo = (DefaultTableModel) tablaRanking.getModel();
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                Object[] fila = new Object[modelo.getColumnCount()];
+                for (int j = 0; j < modelo.getColumnCount(); j++) {
+                    fila[j] = modelo.getValueAt(i, j);
+                }
+                datosExtraidos.add(fila);
+            }
+
+            try {
+                GestorReportes gestor = new GestorReportes();
+                gestor.exportarMasVendidosHTML(archivo.getAbsolutePath(), periodo, datosExtraidos);
+                JOptionPane.showMessageDialog(this, "Ranking de productos exportado exitosamente");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnExportarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExportar;
+    private javax.swing.JButton btnGenerar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblFechaInicio;
+    private javax.swing.JLabel lblFin;
+    private javax.swing.JTable tablaRanking;
+    private javax.swing.JTextField txtFechaFin;
+    private javax.swing.JTextField txtFechaInicio;
     // End of variables declaration//GEN-END:variables
 }

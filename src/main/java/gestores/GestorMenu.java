@@ -2,14 +2,17 @@ package gestores;
 
 import dbconection.DBConnection;
 import excepciones.BDException;
-import modelos.Producto;
 import modelos.Receta;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.sql.ResultSet;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
+import modelos.Producto;
 
 public class GestorMenu {
 
@@ -147,5 +150,49 @@ public class GestorMenu {
             }
         }
         return true;
+    }
+    
+    public void exportarCatalogoHTML(String rutaArchivo, List<Producto> lista) throws IOException {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\">\n");
+        html.append("<title>JavaBeans Café</title>\n");
+
+        
+        html.append("<style>\n");
+        html.append("body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; text-align: center; color: #333; margin: 0; padding: 20px; }\n");
+        html.append("h1 { color: #2c3e50; font-size: 2.5em; margin-bottom: 30px; }\n");
+        html.append(".contenedor-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; max-width: 1200px; margin: 0 auto; }\n");
+        html.append(".tarjeta { background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 260px; padding: 20px; transition: transform 0.3s; }\n");
+        html.append(".tarjeta:hover { transform: translateY(-5px); }\n");
+        html.append(".imagen-producto { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }\n");
+        html.append(".nombre { font-size: 1.4em; font-weight: bold; margin: 15px 0 10px 0; color: #34495e; }\n");
+        html.append(".precio { font-size: 1.3em; font-weight: bold; color: #27ae60; margin: 0; }\n");
+        html.append("</style>\n</head>\n<body>\n");
+
+        html.append("<h1>Nuestro Menú</h1>\n");
+        html.append("<div class=\"contenedor-menu\">\n");
+        
+        // lista de productos y se haga tarjeta html por cada uno
+        for (Producto p : lista) {
+            html.append("<div class=\"tarjeta\">\n");
+
+            if (p.getFotografia() != null) {
+                String imagenBase64 = Base64.getEncoder().encodeToString(p.getFotografia());
+                html.append("<img class=\"imagen-producto\" src=\"data:image/jpeg;base64,").append(imagenBase64).append("\" alt=\"").append(p.getNombreProducto()).append("\">\n");
+            } else {//si no tiene foto
+                html.append("<div style=\"height: 200px; display: flex; align-items: center; justify-content: center; background-color: #eee; border-radius: 8px;\">Sin Imagen</div>\n");
+            }
+
+            html.append("<div class=\"nombre\">").append(p.getNombreProducto()).append("</div>\n");
+            html.append("<div class=\"precio\">Q ").append(p.getPrecioVenta()).append("</div>\n");
+
+            html.append("</div>\n");
+        }
+
+        html.append("</div>\n</body>\n</html>");
+
+        try (FileWriter escritor = new FileWriter(rutaArchivo)) {
+            escritor.write(html.toString());
+        }
     }
 }

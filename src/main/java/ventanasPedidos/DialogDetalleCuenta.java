@@ -4,12 +4,14 @@
  */
 package ventanasPedidos;
 
+import excepciones.BDException;
 import gestores.GestorCuenta;
 import gestores.GestorMenu;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.DetalleCuenta;
+import modelos.Producto;
 
 /**
  *
@@ -38,14 +40,14 @@ public class DialogDetalleCuenta extends javax.swing.JDialog {
             List<DetalleCuenta> detalles = gestor.obtenerDetalles(codigoCuenta);
             
             GestorMenu gestorMenu = new GestorMenu();
-            List<modelos.Producto> menuCompleto = gestorMenu.listaProductos(); 
+            List<Producto> menuCompleto = gestorMenu.listaProductos(); 
             
-            for (modelos.DetalleCuenta d : detalles) {
+            for (DetalleCuenta d : detalles) {
                 
                 // se busca el nombre del producto comparando los códigos
                 String nombreDelProducto = ""; 
                 
-                for (modelos.Producto p : menuCompleto) {
+                for (Producto p : menuCompleto) {
                     if (p.getCodigoProducto().equals(d.getCodigoProducto())) {
                         nombreDelProducto = p.getNombreProducto();
                         break; 
@@ -58,7 +60,7 @@ public class DialogDetalleCuenta extends javax.swing.JDialog {
                     d.getSubtotal()
                 });
             }
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar detalles: " + ex.getMessage());
         }
     }

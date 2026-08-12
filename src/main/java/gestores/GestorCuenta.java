@@ -175,7 +175,7 @@ public class GestorCuenta {
     }
     
     public List<Cuenta> listarHistorialCuentas() throws BDException{
-        List<modelos.Cuenta> cuentas = new ArrayList<>();
+        List<Cuenta> cuentas = new ArrayList<>();
         String query = "SELECT * FROM CUENTA ORDER BY Fecha DESC, Hora_ocupacion DESC";
 
         try (Connection connection = conexionDB.getConnection(); 
@@ -186,7 +186,7 @@ public class GestorCuenta {
                 Time horaLibSQL = rs.getTime("Hora_liberacion"); //para que no de error cuando guarde null al abrir la cuenta
                 LocalTime horaLibLocal = (horaLibSQL != null) ? horaLibSQL.toLocalTime() : null;
 
-                modelos.Cuenta c = new modelos.Cuenta(
+                Cuenta c = new Cuenta(
                         rs.getString("Codigo_cuenta"),
                         rs.getDate("Fecha").toLocalDate(),
                         rs.getTime("Hora_ocupacion").toLocalTime(),

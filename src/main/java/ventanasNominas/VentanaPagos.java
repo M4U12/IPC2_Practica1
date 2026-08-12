@@ -6,6 +6,7 @@ package ventanasNominas;
 
 import gestores.GestorNominas;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import javax.swing.JOptionPane;
 
 /**
@@ -80,14 +81,15 @@ public class VentanaPagos extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblFecha)
-                    .addComponent(txtFechaCorte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnGenerar)
-                    .addComponent(btnPagar)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(cbPeriodo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblTipoPago)))
+                        .addComponent(lblTipoPago))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblFecha)
+                        .addComponent(txtFechaCorte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnGenerar)
+                        .addComponent(btnPagar)))
                 .addContainerGap(241, Short.MAX_VALUE))
         );
 
@@ -112,6 +114,12 @@ public class VentanaPagos extends javax.swing.JInternalFrame {
                         "Fecha Inválida",
                         JOptionPane.ERROR_MESSAGE);
                 return; 
+            }else if (!esPrimera && fechaCorte.getDayOfMonth() <= 15) {
+                JOptionPane.showMessageDialog(this,
+                        "ERROR: No se puede generar una planilla de fin de mes para una fecha anterior o igual al día 15.",
+                        "Fecha Inválida",
+                        JOptionPane.ERROR_MESSAGE);
+                return; 
             }
             boolean generados = gestor.planillaPendiente(fechaCorte, esPrimera);
 
@@ -122,7 +130,7 @@ public class VentanaPagos extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, "No se generaron boletas nuevas. El personal activo ya tiene su pago registrado para este corte.");
             }
 
-        } catch (java.time.format.DateTimeParseException ex) {
+        } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this, "ERROR: El formato de la fecha debe ser AAAA-MM-DD.");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error de BD: " + ex.getMessage());

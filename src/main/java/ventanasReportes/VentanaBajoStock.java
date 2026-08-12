@@ -4,6 +4,19 @@
  */
 package ventanasReportes;
 
+import excepciones.BDException;
+import gestores.GestorInsumo;
+import gestores.GestorReportes;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import modelos.Insumo;
+
 /**
  *
  * @author ACER
@@ -15,6 +28,38 @@ public class VentanaBajoStock extends javax.swing.JInternalFrame {
      */
     public VentanaBajoStock() {
         initComponents();
+        llenarTabla();
+    }
+    
+    public void llenarTabla(){
+        try {
+            GestorInsumo gestor = new GestorInsumo();
+            List<Insumo> lista = gestor.obtenerInsumosBajoStock();
+
+            DefaultTableModel modelo = (DefaultTableModel) tablaBajoStock.getModel();
+            modelo.setRowCount(0); 
+
+            if (lista.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todo en orden. Ningún insumo está por debajo de su stock mínimo.");
+                return;
+            }
+
+            for (Insumo i : lista) {
+                modelo.addRow(new Object[]{
+                    i.getCodigoInsumo(),
+                    i.getNombreInsumo(),
+                    i.getUnidadMedida(),
+                    i.getCantidadActual(),
+                    i.getStockMinimo(),
+                    i.getCostoInsumo()
+                });
+            }
+
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + ex.getMessage());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+        }
     }
 
     /**
@@ -26,25 +71,104 @@ public class VentanaBajoStock extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaBajoStock = new javax.swing.JTable();
+        btnActualizar = new javax.swing.JButton();
+        btnExportar = new javax.swing.JButton();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Insumos con bajo stock");
+
+        tablaBajoStock.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Código", "Nombre", "Unida de medida", "Stock actual", "Stock mínimo", "Costo"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaBajoStock);
+
+        btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
+
+        btnExportar.setText("Exportar");
+        btnExportar.addActionListener(this::btnExportarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(157, 157, 157)
+                .addComponent(btnActualizar)
+                .addGap(79, 79, 79)
+                .addComponent(btnExportar)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnActualizar)
+                    .addComponent(btnExportar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        llenarTabla();
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void btnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarActionPerformed
+        if (tablaBajoStock.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No hay datos en la tabla para exportar.");
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar Reporte Bajo Stock");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Páginas Web HTML (*.html)", "html"));
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+            if (!archivo.getName().toLowerCase().endsWith(".html")) {
+                archivo = new File(archivo.getParentFile(), archivo.getName() + ".html");
+            }
+
+            List<Object[]> datosExtraidos = new ArrayList<>();
+            DefaultTableModel modelo = (DefaultTableModel) tablaBajoStock.getModel();
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                Object[] fila = new Object[modelo.getColumnCount()];
+                for (int j = 0; j < modelo.getColumnCount(); j++) {
+                    fila[j] = modelo.getValueAt(i, j);
+                }
+                datosExtraidos.add(fila);
+            }
+
+            try {
+                GestorReportes gestor = new GestorReportes();
+                gestor.exportarBajoStockHTML(archivo.getAbsolutePath(), datosExtraidos);
+                JOptionPane.showMessageDialog(this, "Reporte de Bajo Stock exportado exitosamente");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnExportarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnExportar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablaBajoStock;
     // End of variables declaration//GEN-END:variables
 }

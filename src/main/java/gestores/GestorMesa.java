@@ -79,7 +79,7 @@ public class GestorMesa {
                 ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                modelos.Mesa mesa = new modelos.Mesa(
+                Mesa mesa = new Mesa(
                         rs.getInt("Numero_mesa"),
                         rs.getInt("Capacidad"),
                         rs.getString("Estado_actual")

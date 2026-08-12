@@ -4,6 +4,7 @@
  */
 package ventanasInventario;
 
+import excepciones.BDException;
 import gestores.GestorInsumo;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -34,7 +35,7 @@ public class VentanaReabastecerInventario extends javax.swing.JInternalFrame {
                 cbInsumo.addItem(i.getCodigoInsumo() + " - " + i.getNombreInsumo());
             }
 
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar insumos: " + ex.getMessage());
         }
     }

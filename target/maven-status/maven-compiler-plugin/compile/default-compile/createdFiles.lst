@@ -11,8 +11,10 @@ ventanasInventario\VentanaInventario$1.class
 practica1\Practica1.class
 utilidades\AlertaStock.class
 ventanasInventario\VentanaReabastecerInventario.class
+ventanasReportes\VentanaFlujoCaja$1.class
 ventanaMesas\VentanaMonitoreoMesas.class
 gestores\GestorCuenta.class
+gestores\GestorReportes.class
 modelos\Nomina.class
 ventanasPedidos\VentanaCuentasAbiertas.class
 ventanasPedidos\VentanaNuevoPedido.class

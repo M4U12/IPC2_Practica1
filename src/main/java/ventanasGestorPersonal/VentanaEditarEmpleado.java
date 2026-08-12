@@ -149,7 +149,7 @@ public class VentanaEditarEmpleado extends javax.swing.JInternalFrame {
         if (jTable1.isEditing()) {
             jTable1.getCellEditor().stopCellEditing();
         }
-        DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
 
         if (modelo.getRowCount() == 0) {
             return;

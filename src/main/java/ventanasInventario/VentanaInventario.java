@@ -30,7 +30,7 @@ public class VentanaInventario extends javax.swing.JInternalFrame {
             DefaultTableModel modelo = (DefaultTableModel) tablaInventario.getModel();
             modelo.setRowCount(0);
 
-            for (modelos.Insumo i : listaInsumos) {
+            for (Insumo i : listaInsumos) {
                 modelo.addRow(new Object[]{
                     i.getCodigoInsumo(),
                     i.getNombreInsumo(),
@@ -41,35 +41,14 @@ public class VentanaInventario extends javax.swing.JInternalFrame {
                 });
             }
 
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error de base de datos al cargar inventario: " + ex.getMessage());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
         }
     }
 
-    private void mostrarAlertasInventario() {
-        try {
-            GestorInsumo gestor = new GestorInsumo();
-            List<Insumo> listaAlertas = gestor.obtenerInsumosBajoStock();
-
-            if (!listaAlertas.isEmpty()) {
-                String mensaje = "Los siguientes insumos están en stock crítico o agotados:\n\n";
-
-                for (modelos.Insumo i : listaAlertas) {
-                mensaje += "- " + i.getNombreInsumo() + 
-                           " (Quedan: " + i.getCantidadActual() + " " + i.getUnidadMedida() + ")\n";
-            }
-
-                mensaje += "\nConsidere reabastecerlos lo antes posible.";
-
-                JOptionPane.showMessageDialog(this, mensaje, "Alerta de Stock Crítico",JOptionPane.WARNING_MESSAGE);
-            }
-
-        } catch (BDException ex) {
-            System.out.println("Error al cargar alertas: " + ex.getMessage());
-        }
-    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.

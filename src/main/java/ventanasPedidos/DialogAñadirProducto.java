@@ -4,6 +4,7 @@
  */
 package ventanasPedidos;
 
+import excepciones.BDException;
 import gestores.GestorCuenta;
 import gestores.GestorInsumo;
 import gestores.GestorMenu;
@@ -40,10 +41,10 @@ public class DialogAñadirProducto extends javax.swing.JDialog {
 
             cbProductos.removeAllItems();
 
-            for (modelos.Producto p : menu) {
+            for (Producto p : menu) {
                 cbProductos.addItem(p.getCodigoProducto() + " - " + p.getNombreProducto() + " - " + "Q " + p.getPrecioVenta());
             }
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar el menú: " + ex.getMessage());
         }
     }
@@ -139,7 +140,7 @@ public class DialogAñadirProducto extends javax.swing.JDialog {
             GestorInsumo gestorInsumo = new GestorInsumo();
             List<Receta> receta = gestorMenu.obtenerRecetaProducto(codigoProd);
 
-            for (modelos.Receta ing : receta) {
+            for (Receta ing : receta) {
                 double necesario = ing.getCantidad() * cantidad;
                 double actual = gestorInsumo.obtenerStockActual(ing.getCodigoInsumo());
                 if (actual < necesario) {

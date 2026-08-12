@@ -4,6 +4,7 @@
  */
 package ventanasPedidos;
 
+import excepciones.BDException;
 import gestores.GestorCuenta;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -32,7 +33,7 @@ public class VentanaHistorialCuentas extends javax.swing.JInternalFrame {
             GestorCuenta gestor = new GestorCuenta();
             List<Cuenta> lista = gestor.listarHistorialCuentas();
 
-            for (modelos.Cuenta c : lista) {
+            for (Cuenta c : lista) {
                 String horaSalida = (c.getHoraLiberacion() != null) ? c.getHoraLiberacion().toString() : "En curso...";
                 
                 modelo.addRow(new Object[]{
@@ -47,7 +48,7 @@ public class VentanaHistorialCuentas extends javax.swing.JInternalFrame {
                     "Q " + c.getTotalCuenta()
                 });
             }
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar el historial: " + ex.getMessage());
         }
     }

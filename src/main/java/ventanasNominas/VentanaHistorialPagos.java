@@ -4,6 +4,8 @@
  */
 package ventanasNominas;
 
+import excepciones.BDException;
+import gestores.GestorNominas;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -25,7 +27,7 @@ public class VentanaHistorialPagos extends javax.swing.JInternalFrame {
 
     private void cargarHistorial() {
         try {
-            gestores.GestorNominas gestor = new gestores.GestorNominas();
+            GestorNominas gestor = new GestorNominas();
             List<Nomina> listaPagos = gestor.listarPagos();
 
             DefaultTableModel modelo = (DefaultTableModel) tablaHistorial.getModel();
@@ -43,7 +45,7 @@ public class VentanaHistorialPagos extends javax.swing.JInternalFrame {
                 });
             }
 
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error de base de datos: " + ex.getMessage());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar la tabla: " + e.getMessage());

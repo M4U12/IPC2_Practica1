@@ -4,6 +4,7 @@
  */
 package ventanasInventario;
 
+import excepciones.BDException;
 import gestores.GestorInsumo;
 import javax.swing.JOptionPane;
 import modelos.Insumo;
@@ -177,7 +178,7 @@ public class VentanaNuevoInsumo extends javax.swing.JInternalFrame {
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "ERROR: El stock mínimo y el costo deben ser valores numéricos válidos.");
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error de Base de Datos: " + ex.getMessage());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());

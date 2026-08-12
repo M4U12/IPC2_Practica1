@@ -16,14 +16,12 @@ public class AlertaStock {
             if (!listaAlertas.isEmpty()) {
                 String mensaje = "Los siguientes insumos están en stock crítico o agotados:\n\n";
 
-                // Concatenamos cada insumo con +=
                 for (Insumo i : listaAlertas) {
                     mensaje += "- " + i.getNombreInsumo() +
                                " (Quedan: " + i.getCantidadActual() +
                                " " + i.getUnidadMedida() + ")\n";
                 }
 
-                // Agregamos la línea final
                 mensaje += "\nConsidere reabastecerlos lo antes posible.";
 
                 JOptionPane.showMessageDialog(ventana, mensaje, "Alerta de Stock Crítico", JOptionPane.WARNING_MESSAGE);

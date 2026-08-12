@@ -4,6 +4,17 @@
  */
 package ventanasReportes;
 
+import excepciones.BDException;
+import gestores.GestorReportes;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author ACER
@@ -26,25 +37,193 @@ public class VentanaFlujoCaja extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblFechaInicio = new javax.swing.JLabel();
+        txtFechaInicio = new javax.swing.JTextField();
+        lblFechaFin = new javax.swing.JLabel();
+        txtFechaFin = new javax.swing.JTextField();
+        btnGenerar = new javax.swing.JButton();
+        btnExportar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaFlujo = new javax.swing.JTable();
+
         setClosable(true);
         setIconifiable(true);
         setTitle("Flujo caja");
+
+        lblFechaInicio.setText("Fehca inicio");
+
+        txtFechaInicio.setText("YYYY-MM-DD");
+        txtFechaInicio.addActionListener(this::txtFechaInicioActionPerformed);
+
+        lblFechaFin.setText("Fecha Fin");
+
+        txtFechaFin.setText("YYYY-MM-DD");
+
+        btnGenerar.setText("Generar");
+        btnGenerar.addActionListener(this::btnGenerarActionPerformed);
+
+        btnExportar.setText("Exportar");
+        btnExportar.addActionListener(this::btnExportarActionPerformed);
+
+        tablaFlujo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Ingresos", "Egresos por nominas", "Egresos por insumos", "Balance"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tablaFlujo);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblFechaInicio)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
+                .addComponent(lblFechaFin)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addComponent(btnGenerar)
+                .addGap(40, 40, 40)
+                .addComponent(btnExportar)
+                .addContainerGap(34, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFechaInicio)
+                    .addComponent(txtFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFechaFin)
+                    .addComponent(txtFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnGenerar)
+                    .addComponent(btnExportar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void txtFechaInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaInicioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFechaInicioActionPerformed
+
+    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        try {
+            String strInicio = txtFechaInicio.getText().trim();
+            String strFin = txtFechaFin.getText().trim();
+
+            LocalDate fechaInicio = null;
+            LocalDate fechaFin = null;
+
+            if (!strInicio.isEmpty() && !strFin.isEmpty()) {
+                fechaInicio = LocalDate.parse(strInicio);
+                fechaFin = LocalDate.parse(strFin);
+
+                if (fechaInicio.isAfter(fechaFin)) {
+                    JOptionPane.showMessageDialog(this, "La fecha de inicio no puede ser mayor a la fecha de fin.");
+                    return;
+                }
+            } else if (!strInicio.isEmpty() || !strFin.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debe llenar ambas fechas o dejar ambas vacías para ver el historial completo.");
+                return;
+            }
+
+            GestorReportes gestor = new GestorReportes();
+            double[] totales = gestor.obtenerFlujoCaja(fechaInicio, fechaFin);
+
+            double ingresosCuentas = totales[0];
+            double egresosNomina = totales[1];
+            double egresosInsumos = totales[2];
+            double balanceFinal = ingresosCuentas - (egresosNomina + egresosInsumos);
+
+            DefaultTableModel modelo = (DefaultTableModel) tablaFlujo.getModel();
+            modelo.setRowCount(0);
+
+            String textoBalance = (balanceFinal >= 0) ? "GANANCIA: Q " : "PÉRDIDA: Q ";
+
+            modelo.addRow(new Object[]{
+                "Q " + String.format("%.2f", ingresosCuentas),
+                "Q " + String.format("%.2f", egresosNomina),
+                "Q " + String.format("%.2f", egresosInsumos),
+                textoBalance + String.format("%.2f", balanceFinal)
+            });
+            txtFechaInicio.setEditable(false);
+            txtFechaFin.setEditable(false);
+            btnGenerar.setEnabled(false);
+
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto. Use AAAA-MM-DD (Ejemplo: 2026-08-01)");
+        } catch (BDException ex) {
+            JOptionPane.showMessageDialog(this, "Error en la base de datos: " + ex.getMessage());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnGenerarActionPerformed
+
+    private void btnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarActionPerformed
+        if (tablaFlujo.getRowCount() == 0 || tablaFlujo.getValueAt(0, 0) == null || tablaFlujo.getValueAt(0, 0).toString().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay datos para exportar. Por favor, presione 'Generar' primero.");
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar Reporte como HTML");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Páginas Web HTML (*.html)", "html"));
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+            if (!archivo.getName().toLowerCase().endsWith(".html")) {
+                archivo = new File(archivo.getParentFile(), archivo.getName() + ".html");
+            }
+
+            String periodo = (txtFechaInicio.getText().trim().isEmpty() || txtFechaFin.getText().trim().isEmpty()) ? "Historial Completo" : txtFechaInicio.getText().trim() + " al " + txtFechaFin.getText().trim();
+            
+            try {
+                GestorReportes gestor = new GestorReportes();
+                gestor.exportarFlujoCajaHTML(
+                    archivo.getAbsolutePath(), periodo,
+                    tablaFlujo.getValueAt(0, 0).toString(), tablaFlujo.getValueAt(0, 1).toString(),
+                    tablaFlujo.getValueAt(0, 2).toString(), tablaFlujo.getValueAt(0, 3).toString()
+                );
+                
+                JOptionPane.showMessageDialog(this, "Reporte exportado exitosamente");
+                btnGenerar.setEnabled(true);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnExportarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExportar;
+    private javax.swing.JButton btnGenerar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblFechaFin;
+    private javax.swing.JLabel lblFechaInicio;
+    private javax.swing.JTable tablaFlujo;
+    private javax.swing.JTextField txtFechaFin;
+    private javax.swing.JTextField txtFechaInicio;
     // End of variables declaration//GEN-END:variables
 }

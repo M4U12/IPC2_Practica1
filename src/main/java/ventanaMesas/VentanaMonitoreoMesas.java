@@ -28,7 +28,7 @@ public class VentanaMonitoreoMesas extends javax.swing.JInternalFrame {
     private void cargarMesas() {
         try {
             GestorMesa gestor = new GestorMesa();
-            List<Mesa> listaMesas = gestor.listarMesas(); //[cite: 5]
+            List<Mesa> listaMesas = gestor.listarMesas(); 
 
             DefaultTableModel modelo = (DefaultTableModel) tableMesas.getModel();
             modelo.setRowCount(0); 

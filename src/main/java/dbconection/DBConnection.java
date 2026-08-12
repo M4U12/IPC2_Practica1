@@ -9,7 +9,7 @@ public class DBConnection {
     
     private static final  String IP = "localhost";
     private static final int PUERTO = 3306;
-    private static final String SCHEMA = "restaurante";
+    private static final String SCHEMA = "javabeans_cafe";
     public static final String USER_NAME = "mau";
     public static final String PASSWORD = "IPC2026";
     public static final String URL = "jdbc:mysql://" + IP + ":" + PUERTO + "/" + SCHEMA;

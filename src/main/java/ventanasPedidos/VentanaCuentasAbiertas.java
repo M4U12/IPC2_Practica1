@@ -4,6 +4,7 @@
  */
 package ventanasPedidos;
 
+import excepciones.BDException;
 import gestores.GestorCuenta;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -30,10 +31,9 @@ public class VentanaCuentasAbiertas extends javax.swing.JInternalFrame {
             modelo.setRowCount(0);
 
             GestorCuenta gestor = new GestorCuenta();
-            // Usamos el método nuevo que acabamos de crear en GestorCuenta
             List<Cuenta> lista = gestor.listarTodasCuentasAbiertas();
 
-            for (modelos.Cuenta c : lista) {
+            for (Cuenta c : lista) {
                 modelo.addRow(new Object[]{
                     c.getCodigoCuenta(),
                     c.getNumeroMesa(),
@@ -42,7 +42,7 @@ public class VentanaCuentasAbiertas extends javax.swing.JInternalFrame {
                     c.getTotalCuenta()
                 });
             }
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar cuentas: " + ex.getMessage());
         }
     }
@@ -113,11 +113,12 @@ public class VentanaCuentasAbiertas extends javax.swing.JInternalFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnañadir, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDetalles, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnañadir, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDetalles, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())

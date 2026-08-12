@@ -9,7 +9,6 @@ import gestores.GestorCuenta;
 import gestores.GestorInsumo;
 import gestores.GestorMenu;
 import gestores.GestorMesa;
-import gestores.GestorNominas;
 import gestores.GestorPersonal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -103,10 +102,10 @@ public class VentanaNuevoPedido extends javax.swing.JInternalFrame {
 
             cbProductos.removeAllItems();
 
-            for (modelos.Producto p : menu) {
+            for (Producto p : menu) {
                 cbProductos.addItem(p.getCodigoProducto() + " - " + p.getNombreProducto() + " - " + "Q " + p.getPrecioVenta());
             }
-        } catch (excepciones.BDException ex) {
+        } catch (BDException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar el menú: " + ex.getMessage());
         }
     }
