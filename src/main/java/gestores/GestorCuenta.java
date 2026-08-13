@@ -24,7 +24,7 @@ public class GestorCuenta {
     }
 
     public boolean abrirCuenta(Cuenta cuenta) throws BDException {
-        String query = "INSERT INTO CUENTA (Codigo_cuenta, Fecha, Hora_ocupacion, Hora_liberacion, Estado_cuenta, Total_de_cuenta, Propina, Numero_mesa, DPI_mesero) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO cuenta (Codigo_cuenta, Fecha, Hora_ocupacion, Hora_liberacion, Estado_cuenta, Total_de_cuenta, Propina, Numero_mesa, DPI_mesero) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -53,10 +53,10 @@ public class GestorCuenta {
     }
 
     public boolean agregarDetalle(DetalleCuenta detalle) throws BDException {
-        String queryCheck = "SELECT Cantidad FROM DETALLE_CUENTA WHERE Codigo_cuenta = ? AND Codigo_producto = ?";
-        String queryInsert = "INSERT INTO DETALLE_CUENTA (Codigo_cuenta, Cantidad, Codigo_producto, Subtotal) VALUES (?, ?, ?, ?)";
-        String queryUpdateDetalle = "UPDATE DETALLE_CUENTA SET Cantidad = Cantidad + ?, Subtotal = Subtotal + ? WHERE Codigo_cuenta = ? AND Codigo_producto = ?";
-        String queryUpdateTotal = "UPDATE CUENTA SET Total_de_cuenta = Total_de_cuenta + ? WHERE Codigo_cuenta = ?";
+        String queryCheck = "SELECT Cantidad FROM detalle_cuenta WHERE Codigo_cuenta = ? AND Codigo_producto = ?";
+        String queryInsert = "INSERT INTO detalle_cuenta (Codigo_cuenta, Cantidad, Codigo_producto, Subtotal) VALUES (?, ?, ?, ?)";
+        String queryUpdateDetalle = "UPDATE detalle_cuenta SET Cantidad = Cantidad + ?, Subtotal = Subtotal + ? WHERE Codigo_cuenta = ? AND Codigo_producto = ?";
+        String queryUpdateTotal = "UPDATE cuenta SET Total_de_cuenta = Total_de_cuenta + ? WHERE Codigo_cuenta = ?";
 
         try (Connection connection = conexionDB.getConnection()) {
             boolean productoYaExiste = false;
@@ -106,7 +106,7 @@ public class GestorCuenta {
 
     public List<DetalleCuenta> obtenerDetalles(String codigoCuenta) throws BDException {
         List<DetalleCuenta> listaDetalles = new ArrayList<>();
-        String query = "SELECT Codigo_cuenta, Cantidad, Codigo_producto, Subtotal FROM DETALLE_CUENTA WHERE Codigo_cuenta = ?";
+        String query = "SELECT Codigo_cuenta, Cantidad, Codigo_producto, Subtotal FROM detalle_cuenta WHERE Codigo_cuenta = ?";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -130,7 +130,7 @@ public class GestorCuenta {
     }
 
     public boolean cobrarCuenta(String codigoCuenta, double totalFinal, double propina) throws BDException {
-        String query = "UPDATE CUENTA SET Estado_cuenta = 'PAGADA', Hora_liberacion = ?, Total_de_cuenta = ?, Propina = ? WHERE Codigo_cuenta = ?";
+        String query = "UPDATE cuenta SET Estado_cuenta = 'PAGADA', Hora_liberacion = ?, Total_de_cuenta = ?, Propina = ? WHERE Codigo_cuenta = ?";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -148,7 +148,7 @@ public class GestorCuenta {
 
     public List<Cuenta> listarTodasCuentasAbiertas() throws BDException {
         List<Cuenta> cuentas = new ArrayList<>();
-        String query = "SELECT * FROM CUENTA WHERE Estado_cuenta = 'ABIERTA'";
+        String query = "SELECT * FROM cuenta WHERE Estado_cuenta = 'ABIERTA'";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -176,7 +176,7 @@ public class GestorCuenta {
     
     public List<Cuenta> listarHistorialCuentas() throws BDException{
         List<Cuenta> cuentas = new ArrayList<>();
-        String query = "SELECT * FROM CUENTA ORDER BY Fecha DESC, Hora_ocupacion DESC";
+        String query = "SELECT * FROM cuenta ORDER BY Fecha DESC, Hora_ocupacion DESC";
 
         try (Connection connection = conexionDB.getConnection(); 
              PreparedStatement ps = connection.prepareStatement(query); 
@@ -208,7 +208,7 @@ public class GestorCuenta {
     public String generarCodigoCuenta() throws BDException {
 
         //el código más alto registrado
-        String query = "SELECT MAX(Codigo_cuenta) AS UltimoCodigo FROM CUENTA";
+        String query = "SELECT MAX(Codigo_cuenta) AS UltimoCodigo FROM cuenta";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
 

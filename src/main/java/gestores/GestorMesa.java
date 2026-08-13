@@ -19,7 +19,7 @@ public class GestorMesa {
     }
 
     public boolean registrarMesa(Mesa mesa) throws BDException {
-        String query = "INSERT INTO MESA (Numero_mesa, Capacidad, Estado_actual) VALUES (?, ?, ?)";
+        String query = "INSERT INTO mesa (Numero_mesa, Capacidad, Estado_actual) VALUES (?, ?, ?)";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -36,7 +36,7 @@ public class GestorMesa {
 
     public List<Mesa> listarMesas() throws BDException {
         List<Mesa> listaMesas = new ArrayList<>();
-        String query = "SELECT Numero_mesa, Capacidad, Estado_actual FROM MESA";
+        String query = "SELECT Numero_mesa, Capacidad, Estado_actual FROM mesa";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
 
@@ -56,7 +56,7 @@ public class GestorMesa {
     }
 
     public boolean cambiarEstadoMesa(int numeroMesa, String nuevoEstado) throws BDException {
-        String query = "UPDATE MESA SET Estado_actual = ? WHERE Numero_mesa = ?";
+        String query = "UPDATE mesa SET Estado_actual = ? WHERE Numero_mesa = ?";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -72,7 +72,7 @@ public class GestorMesa {
 
     public List<Mesa> listarMesasDisponibles() throws BDException {
         List<Mesa> mesasLibres = new ArrayList<>();
-        String query = "SELECT Numero_mesa, Capacidad, Estado_actual FROM MESA WHERE Estado_actual = 'DISPONIBLE' OR Estado_actual = 'LIBRE'";
+        String query = "SELECT Numero_mesa, Capacidad, Estado_actual FROM mesa WHERE Estado_actual = 'DISPONIBLE' OR Estado_actual = 'LIBRE'";
 
         try (Connection connection = conexionDB.getConnection(); 
                 PreparedStatement ps = connection.prepareStatement(query);

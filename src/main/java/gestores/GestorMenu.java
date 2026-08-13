@@ -23,7 +23,7 @@ public class GestorMenu {
     }
 
     public boolean agregarInsumoAReceta(Receta receta) throws BDException {
-        String query = "INSERT INTO RECETA (Codigo_producto, Codigo_insumo, Cantidad) VALUES (?, ?, ?)";
+        String query = "INSERT INTO receta (Codigo_producto, Codigo_insumo, Cantidad) VALUES (?, ?, ?)";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -40,7 +40,7 @@ public class GestorMenu {
 
     public List<Producto> listaProductos() throws BDException {
         List<Producto> menu = new ArrayList<>();
-        String query = "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM PRODUCTO";
+        String query = "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM producto";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
 
@@ -63,8 +63,8 @@ public class GestorMenu {
     public List<Producto> listaProductosPorCategoria(String categoria) throws BDException {
         List<Producto> menu = new ArrayList<>();    
         String query = categoria.equals("TODOS") 
-                     ? "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM PRODUCTO" 
-                     : "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM PRODUCTO WHERE Categoria = ?";
+                     ? "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM producto" 
+                     : "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM producto WHERE Categoria = ?";
 
         try (Connection connection = conexionDB.getConnection(); 
              PreparedStatement ps = connection.prepareStatement(query)) {
@@ -93,7 +93,7 @@ public class GestorMenu {
 
     public List<Receta> obtenerRecetaProducto(String codigoProducto) throws BDException {
         List<Receta> ingredientes = new ArrayList<>();
-        String query = "SELECT Codigo_producto, Codigo_insumo, Cantidad FROM RECETA WHERE Codigo_producto = ?";
+        String query = "SELECT Codigo_producto, Codigo_insumo, Cantidad FROM receta WHERE Codigo_producto = ?";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -116,8 +116,8 @@ public class GestorMenu {
     }
 
     public boolean registrarProductoCompleto(Producto producto, List<Receta> ingredientes) throws BDException {
-        String queryProducto = "INSERT INTO PRODUCTO (Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia) VALUES (?, ?, ?, ?, ?)";
-        String queryReceta = "INSERT INTO RECETA (Codigo_producto, Codigo_insumo, Cantidad) VALUES (?, ?, ?)";
+        String queryProducto = "INSERT INTO producto (Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia) VALUES (?, ?, ?, ?, ?)";
+        String queryReceta = "INSERT INTO receta (Codigo_producto, Codigo_insumo, Cantidad) VALUES (?, ?, ?)";
 
         Connection connection = null;
 

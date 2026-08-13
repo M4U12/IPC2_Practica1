@@ -23,7 +23,7 @@ public class GestorNominas {
     }
 
     public double calcularPropinasAcumuladas(String dpiMesero, LocalDate fechaInicio, LocalDate fechaFin) throws BDException {
-        String query = "SELECT SUM(Propina) AS TotalPropinas FROM CUENTA WHERE DPI_mesero = ? AND Estado_cuenta = 'Pagada' AND Fecha BETWEEN ? AND ?";
+        String query = "SELECT SUM(Propina) AS TotalPropinas FROM cuenta WHERE DPI_mesero = ? AND Estado_cuenta = 'Pagada' AND Fecha BETWEEN ? AND ?";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -192,7 +192,7 @@ public class GestorNominas {
 
     private boolean empleadoYaTieneBoleta(String dpi, LocalDate fechaCorte) throws BDException {
         String prefijo = "NOM-" + fechaCorte.toString().replace("-", "") + "-%";
-        String query = "SELECT COUNT(*) AS total FROM nomina WHERE DPI = ? AND Codigo_nomina LIKE ?";
+        String query = "SELECT COUNT(*) AS total FROM nomina WHERE DPI = ? AND Codigo_nomina LIKE ?"; // unicamente cuenta cuantas filas coinciden con la busqueda
 
         
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {

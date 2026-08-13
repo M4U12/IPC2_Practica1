@@ -30,9 +30,9 @@ public class GestorReportes {
         String filtroFechaNomina = (inicio != null && fin != null) ? " AND Fecha_emision_pago BETWEEN ? AND ?" : "";
         String filtroFechaCompra = (inicio != null && fin != null) ? " WHERE Fecha_compra BETWEEN ? AND ?" : "";
 
-        String queryIngresos = "SELECT SUM(Total_de_cuenta) AS Total FROM CUENTA WHERE Estado_cuenta = 'PAGADA'" + filtroFechaCuenta;
-        String queryNominas = "SELECT SUM(Monto_pago) AS Total FROM NOMINA WHERE (Estado_pago = 'PAGADO' OR Estado_pago = 'PAGADO')" + filtroFechaNomina; 
-        String queryCompras = "SELECT SUM(Total_gastado) AS Total FROM COMPRA_INSUMO" + filtroFechaCompra;
+        String queryIngresos = "SELECT SUM(Total_de_cuenta) AS Total FROM cuenta WHERE Estado_cuenta = 'PAGADA'" + filtroFechaCuenta;
+        String queryNominas = "SELECT SUM(Monto_pago) AS Total FROM nomina WHERE (Estado_pago = 'PAGADO' OR Estado_pago = 'PAGADO')" + filtroFechaNomina; 
+        String queryCompras = "SELECT SUM(Total_gastado) AS Total FROM compra_insumo" + filtroFechaCompra;
 
         try (Connection conn = conexionDB.getConnection()) {
             
@@ -81,9 +81,9 @@ public class GestorReportes {
         String filtroFecha = (inicio != null && fin != null) ? " AND c.Fecha BETWEEN ? AND ?" : "";
         
         String query = "SELECT p.Codigo_producto, p.Nombre_producto, SUM(d.Cantidad) AS Total_Vendidos, SUM(d.Subtotal) AS Ingresos " +
-                       "FROM DETALLE_CUENTA d " +
-                       "INNER JOIN CUENTA c ON d.Codigo_cuenta = c.Codigo_cuenta " +
-                       "INNER JOIN PRODUCTO p ON d.Codigo_producto = p.Codigo_producto " +
+                       "FROM detalle_cuenta d " +
+                       "INNER JOIN cuenta c ON d.Codigo_cuenta = c.Codigo_cuenta " +
+                       "INNER JOIN producto p ON d.Codigo_producto = p.Codigo_producto " +
                        "WHERE c.Estado_cuenta = 'PAGADA'" + filtroFecha + " " +
                        "GROUP BY p.Codigo_producto, p.Nombre_producto " +
                        "ORDER BY Total_Vendidos DESC";

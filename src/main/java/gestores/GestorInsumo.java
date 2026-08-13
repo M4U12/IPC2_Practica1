@@ -20,7 +20,7 @@ public class GestorInsumo {
     }
     
     public boolean registrarInsumo(Insumo insumo) throws BDException{
-        String query = "INSERT INTO INSUMO (Codigo_insumo, Nombre_insumo, Unidad_medida, Cantidad_actual, Stock_minimo, Costo_insumo) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO insumo (Codigo_insumo, Nombre_insumo, Unidad_medida, Cantidad_actual, Stock_minimo, Costo_insumo) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection connection = conexionDB.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)){
@@ -41,7 +41,7 @@ public class GestorInsumo {
     
     public List<Insumo> listarInventario() throws BDException{
         List<Insumo> inventario = new ArrayList<>();
-        String query = "SELECT Codigo_insumo, Nombre_insumo, Unidad_medida, Cantidad_actual, Stock_minimo, Costo_insumo FROM INSUMO";
+        String query = "SELECT Codigo_insumo, Nombre_insumo, Unidad_medida, Cantidad_actual, Stock_minimo, Costo_insumo FROM insumo";
         
         try (Connection connection = conexionDB.getConnection();
              PreparedStatement ps = connection.prepareStatement(query);
@@ -65,9 +65,9 @@ public class GestorInsumo {
     }
     
     public boolean reabastecerStockActual(String codigoInsumo, double cantidad) throws BDException {
-        String queryCosto = "SELECT Costo_insumo FROM INSUMO WHERE Codigo_insumo = ?";
-        String queryUpdate = "UPDATE INSUMO SET Cantidad_actual = Cantidad_actual + ? WHERE Codigo_insumo = ?";
-        String queryInsertCompra = "INSERT INTO COMPRA_INSUMO (Codigo_insumo, Fecha_compra, Cantidad_comprada, Total_gastado) VALUES (?, ?, ?, ?)";
+        String queryCosto = "SELECT Costo_insumo FROM insumo WHERE Codigo_insumo = ?";
+        String queryUpdate = "UPDATE insumo SET Cantidad_actual = Cantidad_actual + ? WHERE Codigo_insumo = ?";
+        String queryInsertCompra = "INSERT INTO compra_insumo (Codigo_insumo, Fecha_compra, Cantidad_comprada, Total_gastado) VALUES (?, ?, ?, ?)";
           
         try (Connection connection = conexionDB.getConnection()) {
             
@@ -110,7 +110,7 @@ public class GestorInsumo {
     }
     
     public double obtenerStockActual(String codigoInsumo) throws BDException {
-        String query = "SELECT Cantidad_actual FROM INSUMO WHERE Codigo_insumo = ?";
+        String query = "SELECT Cantidad_actual FROM insumo WHERE Codigo_insumo = ?";
         
         try (Connection connection = conexionDB.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
@@ -146,7 +146,7 @@ public class GestorInsumo {
         }
         
         double nuevoStock = stockActual - cantidadUsada;
-        String query = "UPDATE INSUMO SET Cantidad_actual = ? WHERE Codigo_insumo = ?";
+        String query = "UPDATE insumo SET Cantidad_actual = ? WHERE Codigo_insumo = ?";
         
         try (Connection connection = conexionDB.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
@@ -193,7 +193,7 @@ public class GestorInsumo {
     }
     
     public boolean verificarAlertaStock(String codigoInsumo) throws BDException {
-        String query = "SELECT Cantidad_actual, Stock_minimo FROM INSUMO WHERE Codigo_insumo = ?";
+        String query = "SELECT Cantidad_actual, Stock_minimo FROM insumo WHERE Codigo_insumo = ?";
         
         try (Connection connection = conexionDB.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {

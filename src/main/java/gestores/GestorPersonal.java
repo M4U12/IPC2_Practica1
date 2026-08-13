@@ -21,7 +21,7 @@ public class GestorPersonal {
     }
 
     public boolean registrarEmpleado(Empleado empleado) throws BDException {
-        String query = "INSERT INTO EMPLEADO (DPI, Nombre, Jornada_LABORAL, Salario, Fecha_contratacion, Estado, Rol) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO empleado (DPI, Nombre, Jornada_LABORAL, Salario, Fecha_contratacion, Estado, Rol) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
@@ -41,7 +41,7 @@ public class GestorPersonal {
     }
 
     public boolean actualizarEmpleado(String dpiAntiguo, Empleado empleado) throws BDException {
-        String query = "UPDATE EMPLEADO SET DPI = ?, Nombre = ?, Jornada_LABORAL = ?, Salario = ?, Fecha_contratacion = ?, Estado = ?, Rol = ? WHERE DPI = ?";
+        String query = "UPDATE empleado SET DPI = ?, Nombre = ?, Jornada_LABORAL = ?, Salario = ?, Fecha_contratacion = ?, Estado = ?, Rol = ? WHERE DPI = ?";
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
             ps.setString(1, empleado.getDpi()); // es el dpi nuevo que viene de la tabla
@@ -63,7 +63,7 @@ public class GestorPersonal {
 
     public List<Empleado> listarEmpleados(String filtro) throws BDException {
         List<Empleado> listaEmpleados = new ArrayList<>();
-        String query = "SELECT DPI, Nombre, Jornada_LABORAL, Salario, Fecha_contratacion, Estado, Rol FROM EMPLEADO";
+        String query = "SELECT DPI, Nombre, Jornada_LABORAL, Salario, Fecha_contratacion, Estado, Rol FROM empleado";
 
         if (filtro.equals("Activos")) {
             query += " WHERE Estado = 1";
@@ -95,7 +95,7 @@ public class GestorPersonal {
     }
 
     public boolean desactivarEmpleado(String dpi) throws BDException {
-        String query = "UPDATE EMPLEADO SET Estado = false WHERE DPI = ?";
+        String query = "UPDATE empleado SET Estado = false WHERE DPI = ?";
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query)) {
 
             ps.setString(1, dpi);
@@ -107,7 +107,7 @@ public class GestorPersonal {
     }
 
     public Empleado buscarEmpleadoPorDPI(String dpi) throws BDException {
-        String query = "SELECT * FROM EMPLEADO WHERE DPI = ?";
+        String query = "SELECT * FROM empleado WHERE DPI = ?";
         try (Connection conn = conexionDB.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setString(1, dpi);
@@ -132,7 +132,7 @@ public class GestorPersonal {
 
     public List<String> listarMeserosActivos() throws BDException {
         List<String> listaMeseros = new ArrayList<>();
-        String query = "SELECT DPI, Nombre FROM EMPLEADO WHERE rol = 'MESERO' and estado = 1";
+        String query = "SELECT DPI, Nombre FROM empleado WHERE rol = 'MESERO' and estado = 1";
 
         try (Connection connection = conexionDB.getConnection(); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
 
