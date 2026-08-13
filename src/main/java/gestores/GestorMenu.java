@@ -59,6 +59,37 @@ public class GestorMenu {
         }
         return menu;
     }
+    
+    public List<Producto> listaProductosPorCategoria(String categoria) throws BDException {
+        List<Producto> menu = new ArrayList<>();    
+        String query = categoria.equals("TODOS") 
+                     ? "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM PRODUCTO" 
+                     : "SELECT Codigo_producto, Nombre_producto, Categoria, Precio_venta, Fotografia FROM PRODUCTO WHERE Categoria = ?";
+
+        try (Connection connection = conexionDB.getConnection(); 
+             PreparedStatement ps = connection.prepareStatement(query)) {
+
+            if (!categoria.equals("TODOS")) {
+                ps.setString(1, categoria);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto prod = new Producto(
+                            rs.getString("Codigo_producto"),
+                            rs.getString("Nombre_producto"),
+                            rs.getString("Categoria"),
+                            rs.getDouble("Precio_venta"),
+                            rs.getBytes("Fotografia")
+                    );
+                    menu.add(prod);
+                }
+            }
+        } catch (SQLException e) {
+            throw new BDException("Error al filtrar el menú: " + e.getMessage(), e);
+        }
+        return menu;
+    }
 
     public List<Receta> obtenerRecetaProducto(String codigoProducto) throws BDException {
         List<Receta> ingredientes = new ArrayList<>();

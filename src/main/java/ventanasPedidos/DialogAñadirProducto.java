@@ -37,7 +37,7 @@ public class DialogAñadirProducto extends javax.swing.JDialog {
     private void cargarProductos() {
         try {
             GestorMenu gestor = new GestorMenu();
-            List<Producto> menu = gestor.listaProductos(); //[cite: 1]
+            List<Producto> menu = gestor.listaProductos();
 
             cbProductos.removeAllItems();
 

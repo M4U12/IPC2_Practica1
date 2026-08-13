@@ -37,15 +37,15 @@ public class VentanaCatalogo extends javax.swing.JInternalFrame {
      */
     public VentanaCatalogo() {
         initComponents();
-        cargarCatalogoVisual();
+        cargarCatalogoVisual("TODOS");
     }
 
-    private void cargarCatalogoVisual() {
+    private void cargarCatalogoVisual(String categoria) {
         try {
             panelContenedor.removeAll();
 
             GestorMenu gestor = new GestorMenu();
-            List<Producto> lista = gestor.listaProductos();
+            List<Producto> lista = gestor.listaProductosPorCategoria(categoria);
 
             for (Producto p : lista) {
                 JPanel tarjeta = new JPanel();
@@ -105,6 +105,7 @@ public class VentanaCatalogo extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         panelContenedor = new javax.swing.JPanel();
         btnExportarHTML = new javax.swing.JButton();
+        cbFiltroCategoria = new javax.swing.JComboBox<>();
 
         setClosable(true);
         setIconifiable(true);
@@ -117,22 +118,33 @@ public class VentanaCatalogo extends javax.swing.JInternalFrame {
         btnExportarHTML.setText("Exportar a HTML");
         btnExportarHTML.addActionListener(this::btnExportarHTMLActionPerformed);
 
+        cbFiltroCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "BEBIDA_FRIA", "BEBIDA_CALIENTE", "POSTRE", "COMIDA" }));
+        cbFiltroCategoria.addActionListener(this::cbFiltroCategoriaActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cbFiltroCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(281, 281, 281)
                 .addComponent(btnExportarHTML)
-                .addGap(0, 381, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnExportarHTML, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(cbFiltroCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnExportarHTML, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
         );
 
         pack();
@@ -168,9 +180,15 @@ public class VentanaCatalogo extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_btnExportarHTMLActionPerformed
 
+    private void cbFiltroCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFiltroCategoriaActionPerformed
+        String categoriaSeleccionada = cbFiltroCategoria.getSelectedItem().toString();
+        cargarCatalogoVisual(categoriaSeleccionada);
+    }//GEN-LAST:event_cbFiltroCategoriaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExportarHTML;
+    private javax.swing.JComboBox<String> cbFiltroCategoria;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panelContenedor;
     // End of variables declaration//GEN-END:variables
